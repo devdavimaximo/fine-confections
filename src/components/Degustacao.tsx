@@ -73,7 +73,7 @@ export default function Degustacao() {
         ))}
 
         <figure className="degust__photo" data-veil>
-          <Img src="degustacao" alt="Caixa degustação da Maison Doce aberta, com brigadeiros e bombons sortidos" sizes="(max-width: 899px) 80vw, 26vw" />
+          <Img src="degustacao" alt="Caixa degustação aberta, com brigadeiros e bombons sortidos" sizes="(max-width: 899px) 80vw, 26vw" />
         </figure>
       </div>
     </section>

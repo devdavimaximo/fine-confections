@@ -1,5 +1,5 @@
 import { lazy, Suspense, useMemo, useRef, useState, type CSSProperties } from 'react';
-import { produto, produtoFlavors, produtoPapers, produtoRibbons } from '../content';
+import { brand, produto, produtoFlavors, produtoPapers, produtoRibbons } from '../content';
 import { brl } from '../lib/env';
 import { useReveal } from '../lib/reveal';
 import { sendOrder } from '../lib/order';
@@ -30,7 +30,7 @@ export default function Produto() {
   const total = produto.price != null ? produto.price * guests : null;
 
   const message = [
-    `Olá, Maison Doce! Gostaria de um orçamento de ${produto.label.toLowerCase()}:`,
+    `Olá, ${brand.name}! Gostaria de um orçamento de ${produto.label.toLowerCase()}:`,
     `• ${guests} unidades`,
     `• Papel ${produtoPapers[paper].name.toLowerCase()}, fita ${produtoRibbons[ribbon].name.toLowerCase()}`,
     `• Recheio: ${produtoFlavors[flavor].name.toLowerCase()}`,

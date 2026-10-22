@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent as RPointerEvent } from 'react';
 import { createPortal } from 'react-dom';
 import gsap from 'gsap';
-import { degustacao, type MenuItem } from '../content';
+import { brand, degustacao, type MenuItem } from '../content';
 import { brl, REDUCED } from '../lib/env';
 import { sendOrder } from '../lib/order';
 import { scroller, scrollToId } from '../lib/scroller';
@@ -136,7 +136,7 @@ export default function MenuSheet({
     }
   };
 
-  const message = `Olá, Maison Doce! Tenho interesse no ${item.name} (${brl(item.price)} a unidade) para o meu evento.\nData, local e número de convidados: `;
+  const message = `Olá, ${brand.name}! Tenho interesse no ${item.name} (${brl(item.price)} a unidade) para o meu evento.\nData, local e número de convidados: `;
 
   const toTasting = () => {
     close();

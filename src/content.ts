@@ -5,7 +5,8 @@
    ========================================================================== */
 
 export const brand = {
-  name: 'Maison Doce',
+  /** DEMO: nome genérico de propósito; troque pelo nome do cliente (o site inteiro lê daqui) */
+  name: 'Seu Atelier',
   descriptor: 'Atelier de doces finos',
   signature: 'Doceria artesanal',
   region: 'Doces finos para eventos',
@@ -59,7 +60,7 @@ export const cut = {
 export const manifesto = {
   label: 'A casa',
   title: ['Sabores autorais,', 'aperfeiçoados', 'com o tempo.'],
-  body: 'Na Maison Doce, cada doce nasce de uma receita própria, desenvolvida e refinada até chegar à mesa do seu evento. Chocolate, fruta, castanha e técnica: o que importa é o que você sente na primeira mordida.',
+  body: 'Aqui, cada doce nasce de uma receita própria, desenvolvida e refinada até chegar à mesa do seu evento. Chocolate, fruta, castanha e técnica: o que importa é o que você sente na primeira mordida.',
   pillars: [
     { k: 'Receitas', v: 'autorais' },
     { k: 'Casamentos, formaturas', v: 'e eventos' },
@@ -72,7 +73,7 @@ export const mesa = {
   title: 'Eleve o nível do seu evento.',
   body: 'Doces finos para casamentos, formaturas e celebrações com montagem no local e serviço de copeiro durante o evento.',
   photos: [
-    { src: 'mesatarte2', alt: 'Mesa de doces finos da Maison Doce em salão de festas, com bolo branco e arranjos de hortênsias', caption: 'A mesa, posta' },
+    { src: 'mesatarte2', alt: 'Mesa de doces finos em salão de festas, com bolo branco e arranjos de hortênsias', caption: 'A mesa, posta' },
     { src: 'mesatarte', alt: 'Bandeja de prata em três andares com bombons de amêndoas, caramelo flor de sal e brigadeiros de pistache', caption: 'Amêndoas, flor de sal, pistache' },
     { src: 'mesatarte4', alt: 'Mini pavlovas com morango e mirtilo em bandeja de prata', caption: 'Mini pavlova' },
     { src: 'mesatarte3', alt: 'Bandejas com brigadeiros de ninho com nutella, amêndoas e morangos ao leite', caption: 'Ninho com Nutella, morango ao leite' },
@@ -232,10 +233,10 @@ export const degustacao = {
       n: 24,
       unit: 'doces na caixa degustação',
       price: 102.9,
-      body: 'Transforme a escolha dos seus doces em um momento íntimo e inesquecível. Com a caixa degustação, você leva a experiência Maison Doce para o conforto da sua casa.',
+      body: 'Transforme a escolha dos seus doces em um momento íntimo e inesquecível. Com a caixa degustação, você leva a experiência do ateliê para o conforto da sua casa.',
       terms: 'Entregas mediante agendamento',
       cta: 'Pedir a caixa',
-      message: 'Olá, Maison Doce! Gostaria de agendar a entrega de uma caixa degustação com 24 unidades.',
+      message: `Olá, ${brand.name}! Gostaria de agendar a entrega de uma caixa degustação com 24 unidades.`,
     },
     {
       id: 'espaco',
@@ -246,7 +247,7 @@ export const degustacao = {
       body: 'Uma degustação personalizada, pensada para noivos, formandos e quem deseja celebrar conosco. Apresentamos nossa seleção de doces finos com a atenção e o carinho que cada história merece.',
       terms: 'Visitas mediante agendamento · para 2 pessoas',
       cta: 'Agendar visita',
-      message: 'Olá, Maison Doce! Gostaria de agendar uma degustação no espaço do ateliê (para 2 pessoas).',
+      message: `Olá, ${brand.name}! Gostaria de agendar uma degustação no espaço do ateliê (para 2 pessoas).`,
     },
   ],
 };
@@ -290,7 +291,7 @@ export const faq = [
     a: 'De forma geral, entre 6 e 8 unidades por pessoa, variando conforme o estilo da festa, a duração do evento e a presença de sobremesas adicionais no menu.',
   },
   {
-    q: 'A Maison Doce fornece suportes de mesa, acervos ou materiais decorativos?',
+    q: 'O ateliê fornece suportes de mesa, acervos ou materiais decorativos?',
     a: 'No momento não fornecemos suportes e acervos. Indicamos uma das três locadoras parceiras: Locare, Ambientalize e Recanto.',
   },
   {
@@ -311,5 +312,5 @@ export const contato = {
   label: 'Contato',
   title: ['Agende sua', 'degustação.'],
   body: 'Conte a data, o local e o número de convidados. A gente cuida do resto, doce por doce.',
-  message: 'Olá, Maison Doce! Gostaria de conversar sobre doces finos para o meu evento.',
+  message: `Olá, ${brand.name}! Gostaria de conversar sobre doces finos para o meu evento.`,
 };

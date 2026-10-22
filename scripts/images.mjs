@@ -1,4 +1,4 @@
-// Gera os assets de public/media a partir de fotos/ (originais da Maison Doce).
+// Gera os assets de public/media a partir de fotos/ (fotos do ateliê).
 //   npm run images
 // - fotos de produto e de mesa → WebP em duas larguras
 // - logo → monograma (máscara alfa) + favicons

@@ -82,9 +82,9 @@ export default function Header() {
 
   return (
     <header className={`hud ${open ? 'is-open' : ''}`} ref={root}>
-      <button className="hud__brand" onClick={() => go('topo')} aria-label="Maison Doce, voltar ao início" data-cursor="início">
+      <button className="hud__brand" onClick={() => go('topo')} aria-label={`${brand.name}, voltar ao início`} data-cursor="início">
         <Monogram className="hud__mono" />
-        <span className="hud__word">Maison Doce</span>
+        <span className="hud__word">{brand.name}</span>
       </button>
 
       <nav className="hud__nav" aria-label="Seções">

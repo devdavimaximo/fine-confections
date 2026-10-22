@@ -2,9 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { REDUCED } from '../lib/env';
 import { markReady } from '../lib/scroller';
+import { brand } from '../content';
 import Monogram from './Monogram';
 
-const WORD = 'MAISON DOCE';
+const WORD = brand.name.toUpperCase();
 
 /** primeiro quadro do bolo desenhado (shader compilado) */
 const glReady = () =>
@@ -63,7 +64,7 @@ export default function Preloader() {
   if (gone) return null;
 
   return (
-    <div className="preloader" ref={root} role="status" aria-label="Carregando Maison Doce">
+    <div className="preloader" ref={root} role="status" aria-label={`Carregando ${brand.name}`}>
       <div className="preloader__lid preloader__lid--top" />
       <div className="preloader__lid preloader__lid--bottom" />
       <div className="preloader__center">

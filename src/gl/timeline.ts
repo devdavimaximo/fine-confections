@@ -71,7 +71,7 @@ export function frameAt(p: number, time: number, rise: number, mx: number, my: n
   // retrato pede câmera mais longe para caber o bolo inteiro
   const far = aspect < 1 ? Math.pow(1 / aspect, 0.8) : 1;
 
-  // paisagem: o bolo fica entre "Maison" e "Doce", sem esconder nenhuma letra
+  // paisagem: o bolo fica entre as duas palavras do nome, sem esconder nenhuma letra
   const pan = aspect < 1 ? 0 : 0.46;
   // em retrato o nome fica empilhado no topo: o bolo desce no quadro
   const ta0: V3 = [pan, aspect < 1 ? 1.0 : 0.56, 0];

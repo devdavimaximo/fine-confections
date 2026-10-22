@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import gsap from 'gsap';
-import { planner } from '../content';
+import { brand, planner } from '../content';
 import { brl, clamp, damp, REDUCED } from '../lib/env';
 import { useReveal } from '../lib/reveal';
 import { sendOrder } from '../lib/order';
@@ -136,7 +136,7 @@ export default function Planner() {
   const pct = ((guests - planner.guests.min) / (planner.guests.max - planner.guests.min)) * 100;
 
   const message = [
-    'Olá, Maison Doce! Estou planejando a mesa de doces finos:',
+    `Olá, ${brand.name}! Estou planejando a mesa de doces finos:`,
     `• ${guests} convidados, cerca de ${fmt(units)} doces (${per} por pessoa)`,
     waiter ? '• Gostaria do serviço de copeiro durante o evento' : '',
     'Data e local do evento: ',

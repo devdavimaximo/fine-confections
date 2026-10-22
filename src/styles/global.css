@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Maison Doce · atelier de doces finos
+   Seu Atelier · modelo de site para ateliês de doces finos
    Papel de estúdio, ganache, creme e ouro de folha. Cormorant Garamond + Jost.
    O oval do monograma e o arco do post da casa são as molduras do site.
    ========================================================================== */
@@ -736,6 +736,12 @@ main {
 
 .hero__word .ch {
   padding-bottom: 0.1em;
+}
+
+/* a máscara da entrada só precisa cortar na vertical (as letras sobem do papel):
+   na horizontal, o itálico passa da caixa da letra e a ponta do "r" sumiria */
+.hero__word .ch-mask {
+  overflow-x: visible !important;
 }
 
 .hero__word--a {

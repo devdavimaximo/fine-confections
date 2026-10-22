@@ -11,6 +11,8 @@ import { LAYER_KEYS, layerEls } from '../gl/layers';
 const Cake = lazy(() => import('../gl/Cake'));
 
 const CHAPTERS = ['Vitrine', 'Lâmina', 'Abertura', 'Por dentro'];
+/** o nome em duas linhas, uma de cada lado do bolo */
+const WORDS = [brand.name.split(' ')[0], brand.name.split(' ').slice(1).join(' ')];
 const ROMAN = ['I', 'II', 'III', 'IV'];
 
 export default function Hero() {
@@ -76,13 +78,13 @@ export default function Hero() {
   );
 
   return (
-    <section className="hero" id="topo" ref={root} aria-label="Maison Doce, atelier de doces finos">
+    <section className="hero" id="topo" ref={root} aria-label={`${brand.name}, ${brand.descriptor.toLowerCase()}`}>
       <h1 className="hero__title" aria-label={`${brand.name}, ${brand.descriptor}`}>
         <span className="hero__word hero__word--a" aria-hidden="true">
-          Maison
+          {WORDS[0]}
         </span>
         <span className="hero__word hero__word--b" aria-hidden="true">
-          Doce
+          {WORDS[1]}
         </span>
       </h1>
 

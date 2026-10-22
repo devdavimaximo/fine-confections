@@ -1,7 +1,7 @@
-# Maison Doce · site demonstrativo
+# Seu Atelier · site demonstrativo
 
 Cópia do projeto tartemezaria/ sem a marca do cliente, usada como demo para prospecção no nicho de ateliês de doces finos.
-Nome, logo (monograma MD em scripts/monogram.mjs), WhatsApp, Instagram e localização são genéricos.
+Nome ("Seu Atelier"), logo (monograma SA em scripts/monogram.mjs), WhatsApp, Instagram e localização são genéricos.
 Para personalizar: `brand` em src/content.ts.
 
 ---
@@ -73,7 +73,7 @@ React 19 · Vite · TypeScript · three.js + React Three Fiber · GSAP
   compilador D3D do Windows (ANGLE), todos os laços usam limite dinâmico,
   ruído vem de textura e sombra/AO usam um `mapLite` sem relevo: compila em
   poucos segundos. O canvas é transparente fora do bolo, então o nome
-  "Maison Doce" fica atrás dele e a sombra cai sobre o papel do DOM.
+  nome do ateliê fica atrás dele e a sombra cai sobre o papel do DOM.
   Materiais: cobertura veludo rosé (pontilhado do spray, brilho rasante na
   silhueta), framboesas com drupelas, folha de ouro em flocos amassados,
   lascas de pistache; no corte, mousse de chocolate branco envolvendo os
