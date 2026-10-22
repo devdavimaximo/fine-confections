@@ -18,26 +18,19 @@ await mkdir(out('media/menu'), { recursive: true });
 /* ---------- fotos ---------- */
 
 const PHOTOS = [
-  'queijobrie',
-  'queijobriedentro',
-  'queijobriezoom',
   'macarons',
-  'marcarons2',
   'macarons3',
-  'macarons4',
-  'macarons5',
   'mesatarte',
   'mesatarte2',
   'mesatarte3',
   'mesatarte4',
   'mesatarte5',
   'mesatarte6',
-  'macarons6',
   'degustacao',
 ];
 
 for (const name of PHOTOS) {
-  const slug = name.replace('marcarons', 'macarons');
+  const slug = name;
   for (const [w, q] of [
     [1800, 80],
     [1300, 79],
@@ -78,8 +71,8 @@ await favicon(32, 'favicon-32.png');
 await favicon(180, 'apple-touch-icon.png');
 await favicon(512, 'icon-512.png');
 
-// imagem de compartilhamento: o bombom de brie, enquadrado em 1200×630
-await sharp(src('queijobrie.jpg'))
+// imagem de compartilhamento: a mesa posta com o bolo branco, enquadrada em 1200×630
+await sharp(src('mesatarte2.jpg'))
   .resize({ width: 1200, height: 630, fit: 'cover', position: 'attention' })
   .jpeg({ quality: 84, mozjpeg: true })
   .toFile(out('media/og.jpg'));
@@ -120,8 +113,8 @@ const PAGES = [
   ],
   [
     'menu6.png',
-    ['flakes-nutella', 'caixinha-pistache', 'ovomaltine', 'brie-goiabada'],
-    { 0: [133, 198], 1: [391, 198], 2: [134, 404], 3: [378, 403] },
+    ['flakes-nutella', 'caixinha-pistache', 'ovomaltine'],
+    { 0: [133, 198], 1: [391, 198], 2: [134, 404] },
   ],
 ];
 

@@ -9,22 +9,22 @@ Para personalizar: `brand` em src/content.ts.
 ## Notas do projeto original
 
 Site one-page da Tarte Mezeria, atelier de doces finos em Porto Alegre e na
-Serra Gaúcha. Substitui o link na bio: cardápio, torre de macarons,
+Serra Gaúcha. Substitui o link na bio: cardápio, bem-casados,
 degustação, planejamento da mesa e contato, num lugar só.
 
 ## Conceito: "por dentro"
 
-Todas as fotos da casa são cortes: o bombom de brie aberto, os macarons
-mordidos. O site é uma degustação, e o scroll corta o doce.
+O site é uma degustação, e o scroll corta o doce: o bolo do hero se abre em
+camadas, e as fotos da casa mostram macarons mordidos.
 
 | Seção | O que acontece |
 | --- | --- |
 | Preloader | Tampa de ganache com o monograma TM; o oval se desenha como traço de caneta enquanto o shader compila, depois a tampa se abre em duas |
-| Hero (I–IV) | O Bombom de Queijo Brie com Goiabada em raymarching (SDF procedural): vitrine → lâmina de ouro desce pela face → as metades se abrem → câmera entra no corte e as camadas ganham legenda |
+| Hero (I–IV) | Entremet Framboesa & Pistache em raymarching (SDF procedural): vitrine → lâmina de ouro cruza o topo e desce pela face → as metades se abrem → câmera entra no corte e as seis camadas ganham legenda. Bolo ilustrativo (não está no cardápio): trocar pelo bolo-assinatura do cliente |
 | I · A casa | "Sabores autorais, aperfeiçoados com o tempo." (texto do próprio Instagram) |
 | II · A mesa | Galeria horizontal fixada com as fotos de eventos, em molduras de arco e oval (o oval vem do monograma) |
-| III · Cardápio | Os 44 doces do PDF com preço por unidade; prato de porcelana mostra o doce sob o cursor |
-| IV · Macarons | Torre 3D configurável: 5–10 andares, as 32 cores numeradas da cartela (degradê, intercalado ou misto) e os 26 sabores. A contagem por andar fecha com a tabela (65 a 210) |
+| III · Cardápio | Os 43 doces do PDF com preço por unidade; prato de porcelana mostra o doce sob o cursor |
+| IV · Bem-casados | Produto-assinatura 3D configurável: papel crepom (8 cores), fita de cetim (6), recheio (6 sabores, a câmera vai até o corte), tag com nomes e data, quantidade por convidados. O pedido vai pronto para o WhatsApp. Produto, sabores e preço são da demonstração |
 | V · Degustação | Caixa com 24 doces em casa · apresentação de 28 doces no espaço em Moinhos |
 | VI · Planeje | Calculadora com os dados da página de perguntas: 6 a 8 doces por convidado, média de investimento, taxa de montagem, copeiro |
 | VII · Perguntas | As perguntas frequentes do PDF |
@@ -41,12 +41,12 @@ mordidos. O site é uma degustação, e o scroll corta o doce.
    com a casa.
 3. **og:image** em `index.html` usa caminho relativo; trocar pela URL absoluta
    quando houver domínio.
-4. **Fotos do cardápio**: 20 de 44 já têm foto própria (`fotos/cardapio/`). Os outros
+4. **Fotos do cardápio**: 19 de 43 já têm foto própria (`fotos/cardapio/`). Os outros
    24 ainda usam o recorte do PDF (~100 px), desfocado na lupa e na ficha:
    Tradicional, Beijinho de Coco, Paçoca, Prestígio, Churros, Brûlée Tradicional Branquinho, Ferrero Rocher, Chocolate Belga, Meio Amargo, Chocolate Branco, Coco Queimado, Praliné de Nozes Preto, Bombom de Maracujá, Bombom ao Rum com Pistache, Bombom de Cappuccino, Bombom de Uva com Amêndoas Laminadas, Morango ao Leite, Bombom de Morango Trufado, Mini Brownie Branco com Doce de Leite, Mini Brownie ao Leite com Nutella, Mini Quindim, Tartelette Banoffee, Tartelette Limão Siciliano, Mini Mil Folhas.
 5. **Hero em celulares fracos** (decidido: fazer depois): se nem na resolução
-   mínima o aparelho mantiver ~30 fps, trocar o 3D pelas três fotos reais do
-   bombom (fechado, aberto, close) com a mesma coreografia de scroll e legendas.
+   mínima o aparelho mantiver ~30 fps, trocar o 3D por três fotos reais de um
+   doce da casa (fechado, aberto, close) com a mesma coreografia de scroll e legendas.
    Estimativa atual: iPhone 13+ e Android topo de linha em nitidez máxima;
    intermediários ficam fluidos, mas com o close um pouco borrado.
 6. **Teste em celular real**: `npx vite --host` e abrir
@@ -69,37 +69,39 @@ npm run images    # regenera public/media a partir de fotos/
 React 19 · Vite · TypeScript · three.js + React Three Fiber · GSAP
 (ScrollTrigger, SplitText) · Lenis. Fontes: Cormorant Garamond + Jost.
 
-- `src/gl/bonbonShader.ts`: o bombom inteiro em SDF num quad de tela. Para o
+- `src/gl/cakeShader.ts`: o bolo inteiro em SDF num quad de tela. Para o
   compilador D3D do Windows (ANGLE), todos os laços usam limite dinâmico,
   ruído vem de textura e sombra/AO usam um `mapLite` sem relevo: compila em
-  poucos segundos em vez de ~17 s. O canvas é transparente fora do bombom, então o nome
-  "Tarte Mezeria" fica atrás dele e a sombra cai sobre o papel do DOM.
-  Materiais calibrados pelas fotos da casa: casca manteiga acetinada com
-  translucidez, creme de brie úmido, goiabada bordô fibrosa e brilhante,
-  folha de ouro em flocos amassados.
-- **Calibração do bombom**: com `npm run dev`, abra `/lab.html?v=vitrine`,
-  `?v=aberto` ou `?v=macro` para ver o render ao lado da foto correspondente
-  da casa. As cores de referência medidas nas fotos estão em
-  `scripts/.ref-colors.txt`. A página só existe no dev; não entra no build.
+  poucos segundos. O canvas é transparente fora do bolo, então o nome
+  "Maison Doce" fica atrás dele e a sombra cai sobre o papel do DOM.
+  Materiais: cobertura veludo rosé (pontilhado do spray, brilho rasante na
+  silhueta), framboesas com drupelas, folha de ouro em flocos amassados,
+  lascas de pistache; no corte, mousse de chocolate branco envolvendo os
+  recheios, pão de ló de pistache com alvéolos, geleia de framboesa brilhante
+  com sementes e base crocante. A luz do corte é rasante: relevo largo na
+  face vira sombra, por isso a mousse é quase plana.
+- **Laboratório do bolo**: com `npm run dev`, abra `/lab.html?v=vitrine`,
+  `?v=lamina`, `?v=aberto`, `?v=macro` ou `?p=0.5` (qualquer ponto do corte)
+  para ver o render parado com a câmera do site. Só existe no dev; não entra no build.
 - `src/gl/timeline.ts`: câmera, metades e luz-chave em função do scroll, espelhado no
   shader; as legendas das camadas são projetadas com a mesma matemática.
-- **Torre de macarons** (`Tower.tsx`, `towerLayout.ts`, `macaron.ts`,
-  `macaronMaterial.ts`): como a torre de acrílico da foto do cardápio, com
-  bandejas transparentes de borda escura e macarons **em pé**, enfileirados em
-  anéis. A contagem do cardápio (65 a 210) fecha com espaçamento constante e
-  raio crescendo linearmente por andar. O macaron tem proporções medidas na foto
-  de perfil (domo 0,165 · pé 0,075 · recheio 0,085 do diâmetro); poros do pé,
-  pontinhos da casca e sulcos do recheio são relevo no shader, que some de longe.
-  Laboratório: `/lab-mac.html?v=perfil | pistache | torre | andar`.
-- Desempenho da torre (lições, medidas no site com Intel Iris Xe):
+- **Produto-assinatura: bem-casado** (`BemCasado.tsx`, `bemCasadoModel.ts`,
+  `productMaterials.ts`, seção `Produto.tsx`): um produto só, com variações de
+  aparência. Embrulho de papel crepom gerado como superfície de revolução que ganha
+  pregas onde o papel franze até o pescoço, coroa com as quatro pontas da folha e a
+  borda ondulada; rugas do crepe no shader. Fita de cetim com laço, tag com os nomes
+  em folha de ouro (canvas) e um bem-casado aberto ao meio: pão de ló com alvéolos,
+  recheio na cor do sabor e casquinha de açúcar, pintados no shader do corte.
+  **Para adaptar a outro ateliê não há 3D a fazer**: as cores do papel e da fita, os
+  sabores (cor do recheio e pedacinhos), os textos e o preço estão em `produto*` no
+  `content.ts`. Para trocar de produto, basta um novo modelo com as mesmas props.
+- Lições de desempenho do 3D (medidas com Intel Iris Xe):
   - com `scene.environment`, o three.js ignora `material.envMapIntensity` e usa
     `scene.environmentIntensity`; ambiente forte achata e lava as cores;
   - leitura de textura com derivada implícita dentro de `if` faz o compilador D3D
-    do Windows rodar todos os ramos: use `textureLod` (39 → 57 fps);
-  - macarons desenhados da frente para trás (reordenados a cada quadro) e só os
-    visíveis; canvas opaco na cor do papel; grão sem `mix-blend-mode`;
-  - no celular, o giro sozinho roda a 30 fps; arrastar ou trocar o pedido, a 60;
-  - diagnóstico no dev: `?prof=nodetail,noshadow,standard,lowpoly,nostand`.
+    do Windows rodar todos os ramos: use `textureLod`;
+  - canvas opaco na cor do papel; grão sem `mix-blend-mode`; desenho sob demanda
+    (parada, a caixa não gasta GPU).
 - Desenho sob demanda: o hero só redesenha quando scroll, mouse ou o giro da
   vitrine mudam algo; parado no corte, 0 quadros/s. No celular a vitrine gira a 30 fps.
 - Medido numa Intel Iris Xe a 1440×900: 58–60 fps em todas as cenas (a
@@ -177,4 +179,3 @@ ocupando uns 60% do quadro, fundo claro e liso (o site mistura a foto com o prat
 | Flakes de Nutella Crocante | `flakes-nutella.jpg` |
 | Bombom de Ovomaltine | `ovomaltine.jpg` |
 | Caixinha de Pistache | `caixinha-pistache.jpg` |
-| Bombom de Queijo Brie com Goiabada | `brie-goiabada.jpg` |

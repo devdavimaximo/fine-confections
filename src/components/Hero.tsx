@@ -3,12 +3,12 @@ import gsap from 'gsap';
 import { SplitText } from 'gsap/SplitText';
 import { useGSAP } from '@gsap/react';
 import { brand, cut, hero, menuCount } from '../content';
-import { LITE, REDUCED, brl } from '../lib/env';
+import { LITE, REDUCED } from '../lib/env';
 import { onReady, scrollToId, signals } from '../lib/scroller';
 import { LAYER_KEYS, layerEls } from '../gl/layers';
 
 // three.js fica fora do bundle inicial: o preloader aparece na hora e espera este chunk
-const Bonbon = lazy(() => import('../gl/Bonbon'));
+const Cake = lazy(() => import('../gl/Cake'));
 
 const CHAPTERS = ['Vitrine', 'Lâmina', 'Abertura', 'Por dentro'];
 const ROMAN = ['I', 'II', 'III', 'IV'];
@@ -23,7 +23,7 @@ export default function Hero() {
     () => {
       const q = gsap.utils.selector(root);
 
-      // entrada: as letras sobem do papel junto com o bombom
+      // entrada: as letras sobem do papel junto com o bolo
       const splits = q<HTMLElement>('.hero__word').map((el) => SplitText.create(el, { type: 'chars', charsClass: 'ch', mask: 'chars' }));
       const chars = splits.flatMap((s) => s.chars);
       gsap.set(chars, { yPercent: 110 });
@@ -86,16 +86,16 @@ export default function Hero() {
         </span>
       </h1>
 
-      <Suspense fallback={<div className="bonbon" />}>
-        <Bonbon />
+      <Suspense fallback={<div className="cake" />}>
+        <Cake />
       </Suspense>
 
-      {/* o bombom é 3D: o aviso fica durante o corte inteiro e leva até a foto de verdade */}
+      {/* o bolo é 3D: o aviso fica durante o corte inteiro e leva até a foto de verdade */}
       <button
         className="hero__note"
         data-intro
         data-cursor="ver foto"
-        onClick={() => scrollToId('bombom-real', 2.6, -Math.round(window.innerHeight * 0.16))}
+        onClick={() => scrollToId('foto-real', 2.6, -Math.round(window.innerHeight * 0.16))}
       >
         <span className="hero__note-dot" aria-hidden="true" />
         <span>{hero.note}</span>
@@ -133,9 +133,7 @@ export default function Hero() {
         <p className="eyebrow eyebrow--gold">{cut.tag}</p>
         <h2 className="hero__name">{cut.name}</h2>
         <p className="hero__text">{cut.text}</p>
-        <p className="hero__price">
-          {brl(cut.price)} <small>un.</small>
-        </p>
+        <p className="hero__price">{cut.priceNote}</p>
       </article>
 
       <div
@@ -176,7 +174,7 @@ export default function Hero() {
       </div>
 
       <p className="hero__outro">
-        <em>Um</em> dos {menuCount} doces do cardápio.
+        <em>E mais</em> {menuCount} doces no cardápio.
       </p>
 
       <div className="hero__chapter" aria-hidden="true">

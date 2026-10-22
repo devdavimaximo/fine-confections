@@ -1,17 +1,17 @@
 import { clamp, easeInOut, easeOut, lerp, smooth, span } from '../lib/env';
 
 /**
- * O corte do bombom de brie, em quatro tempos de scroll:
- *   0.00–0.20  a pirâmide para de girar e se apresenta
- *   0.16–0.34  a lâmina: um fio de ouro desce pela face
+ * O corte do entremet, em quatro tempos de scroll:
+ *   0.00–0.20  o bolo para de balançar e se apresenta
+ *   0.16–0.34  a lâmina: um fio de ouro cruza o topo e desce pela face
  *   0.34–0.60  as metades se abrem como um livro
  *   0.62–0.90  a câmera entra no corte e as camadas ganham nome
- * Tudo aqui é espelhado em bonbonShader.ts (mesmas constantes, mesma rotação),
+ * Tudo aqui é espelhado em cakeShader.ts (mesmas constantes, mesma rotação),
  * para que as legendas do DOM caiam exatamente sobre as camadas do shader.
  */
 
-export const B = 0.75; // meia base
-export const H = 1.32; // altura: H/B ≈ 1,76, medido na foto de vitrine da casa
+export const R = 0.9; // raio
+export const H = 1.12; // altura: um entremet alto, H/2R ≈ 0,62
 
 export type V3 = [number, number, number];
 
@@ -54,41 +54,43 @@ export function frameAt(p: number, time: number, rise: number, mx: number, my: n
   const open = easeInOut(span(p, 0.34, 0.6));
   const macro = easeInOut(span(p, 0.62, 0.9));
 
-  // vitrine como na foto: quina virada para a câmera (45°), balanço leve; no corte, face de frente
-  const idle = Math.PI / 4 + Math.sin(time * 0.23) * 0.16 + mx * 0.2;
+  // vitrine: o arranjo do topo à frente-esquerda, balanço lento; no corte, a faca de frente
+  const idle = Math.PI / 4 + Math.sin(time * 0.23) * 0.34 + mx * 0.3;
   const yaw = lerp(idle, 0.42, settle) * (1 - open);
 
   const sink = -(1 - rise) * H * 1.06;
   const spread = Math.pow(open, 0.75);
-  const offL: V3 = [-0.64 * spread, sink, 0.1 * open];
-  const offR: V3 = [0.64 * spread, sink, -0.1 * open];
+  // afastadas o bastante para as quinas de trás não se cruzarem ao girar
+  const offL: V3 = [-0.86 * spread, sink, 0.1 * open];
+  const offR: V3 = [0.86 * spread, sink, -0.1 * open];
   // no macro a metade direita sai de quadro e deixa a face esquerda sozinha
   offR[0] += easeInOut(span(p, 0.6, 0.82)) * 1.5;
   const angL = yaw - OPEN_ANGLE * open;
   const angR = yaw + OPEN_ANGLE * open;
 
-  // retrato pede câmera mais longe para caber a pirâmide inteira
+  // retrato pede câmera mais longe para caber o bolo inteiro
   const far = aspect < 1 ? Math.pow(1 / aspect, 0.8) : 1;
 
-  // paisagem: o bombom fica entre "Maison" e "Doce", sem esconder nenhuma letra
+  // paisagem: o bolo fica entre "Maison" e "Doce", sem esconder nenhuma letra
   const pan = aspect < 1 ? 0 : 0.46;
-  // em retrato o nome fica empilhado no topo: o bombom desce no quadro
-  const ta0: V3 = [pan, aspect < 1 ? 1.05 : 0.6, 0];
-  // câmera ~26° acima, como a foto de produto (vê a base em losango e a sombra longa)
-  const ro0: V3 = add(ta0, scale([0, 0.438, 0.899], 7.3 * far));
-  const ro1: V3 = [0.3, 1.3, 5.9 * far];
-  const ta1: V3 = [0, aspect < 1 ? 1.05 : 0.86, 0];
-  // aberto, as metades ocupam ~3.4 de largura: em retrato a câmera recua mais
+  // em retrato o nome fica empilhado no topo: o bolo desce no quadro
+  const ta0: V3 = [pan, aspect < 1 ? 1.0 : 0.56, 0];
+  // câmera ~30° acima, como foto de vitrine: vê o topo com o arranjo e a sombra longa
+  const ro0: V3 = add(ta0, scale([0, 0.5, 0.866], 9.2 * far));
+  const ro1: V3 = [0.3, 1.6, 5.9 * far];
+  const ta1: V3 = [0, aspect < 1 ? 1.0 : 0.78, 0];
+  // aberto, as metades ocupam ~3,8 de largura: em retrato a câmera recua mais
   const farOpen = aspect < 1 ? Math.pow(1 / aspect, 1.35) : 1;
-  const ro2: V3 = [0, 1.15 + (farOpen - 1) * 0.5, 5.4 * farOpen];
-  const ta2: V3 = [0, 0.55, -0.05];
+  const ro2: V3 = [0, 1.95 + (farOpen - 1) * 0.6, 6.5 * farOpen];
+  const ta2: V3 = [0, 0.5, -0.05];
 
   // macro: de frente para o corte da metade esquerda, um pouco de lado
-  const face = toWorld([0, H * 0.42, 0], offL, angL);
+  const face = toWorld([0, H * 0.5, 0], offL, angL);
   const nrm: V3 = [Math.cos(angL), 0, -Math.sin(angL)];
   const side = norm(cross(nrm, [0, 1, 0]));
-  // distância para caber a face inteira com o ouro (meia altura visível = d / 2·focal)
-  const dist = aspect < 1 ? (3.7 / aspect) * 0.92 : 5.09;
+  // distância para caber a face inteira com o arranjo do topo; em retrato manda a largura (2R)
+  // paisagem: recuada o bastante para as legendas da direita não chegarem no marcador de capítulo
+  const dist = aspect < 1 ? 5.4 / aspect : 5.9;
   // de lado (≈18°), como a foto de detalhe: a face externa da metade aparece à esquerda
   // paisagem: a base para em ~86% da altura, deixando o rodapé para a frase final
   const lift = aspect < 1 ? 0 : 0.097;
@@ -106,20 +108,23 @@ export function frameAt(p: number, time: number, rise: number, mx: number, my: n
   const par = 1 - macro * 0.6;
   ro = add(ro, [mx * 0.3 * par, -my * 0.14 * par, 0]);
 
-  // luz: na vitrine vem de trás e da direita (sombra longa para a frente-esquerda, face esquerda
-  // em penumbra quente); para o corte gira para a frente-esquerda e acende o recheio
+  // luz: na vitrine vem da direita, um pouco à frente (o veludo pega luz e a sombra corre
+  // para a esquerda); para o corte gira para a frente-esquerda e acende o recheio
   const turn = smooth(span(p, 0.12, 0.5));
-  const key = norm(mix(norm([0.72, 0.66, -0.1]), norm([-0.3, 0.74, 0.6]), turn));
+  const key = norm(mix(norm([0.74, 0.62, 0.22]), norm([-0.3, 0.74, 0.6]), turn));
 
   return { ro, ta, focal: lerp(2.35, 2.6, macro), offL, offR, angL, angR, seam, open, macro, key };
 }
 
 /** pontos das camadas, no espaço local da metade esquerda (face do corte em x = 0) */
 export const ANCHORS = {
-  gold: [0, H + 0.02, 0] as V3,
-  shell: [0, H * 0.26, B * 0.74 - 0.018] as V3,
-  guava: [0, H * 0.46, -0.04] as V3,
-  cream: [0, H * 0.12, -0.18] as V3,
+  gold: [-0.3, H + 0.1, 0.16] as V3,
+  coat: [0, 0.5, R - 0.013] as V3,
+  cream: [0, 0.97, 0.12] as V3,
+  // a faixa do meio da face fica sem legenda à direita: ali mora o marcador de capítulo
+  jam: [0, 0.335, -0.2] as V3,
+  sponge: [0, 0.19, -0.42] as V3,
+  crunch: [0, 0.045, 0.5] as V3,
 };
 
 /** projeta um ponto do mundo para pixels CSS, igual ao rd do shader */

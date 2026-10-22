@@ -2,8 +2,8 @@ import * as THREE from 'three';
 
 /**
  * Textura de ruído do truque do iq: G em (x, y) repete R em (x − 37, y − 239),
- * o que deixa o shader ler duas fatias de z numa leitura só. Usada pelo bombom
- * (raymarching) e pelo relevo fino dos macarons.
+ * o que deixa o shader ler duas fatias de z numa leitura só. Usada pelo bolo
+ * (raymarching) e pelo relevo fino do bem-casado (crepom, massa).
  */
 export function noiseTexture() {
   const N = 256;

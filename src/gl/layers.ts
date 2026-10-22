@@ -1,18 +1,21 @@
 import { clamp } from '../lib/env';
-import { ANCHORS, B, H, project, toWorld, type Frame } from './timeline';
+import { ANCHORS, H, R, project, toWorld, type Frame } from './timeline';
 
 export type LayerKey = keyof typeof ANCHORS;
-export const LAYER_KEYS: LayerKey[] = ['gold', 'shell', 'guava', 'cream'];
+/** de cima para baixo, na ordem em que aparecem */
+export const LAYER_KEYS: LayerKey[] = ['gold', 'coat', 'cream', 'jam', 'sponge', 'crunch'];
 
-/** de que lado da face cada legenda fica (a casca é a borda esquerda do corte) */
-const SIDE: Record<LayerKey, 'l' | 'r'> = { gold: 'r', shell: 'l', guava: 'r', cream: 'r' };
+/** de que lado da face cada legenda fica (a cobertura e a base são a borda esquerda do corte) */
+const SIDE: Record<LayerKey, 'l' | 'r'> = { gold: 'r', coat: 'l', cream: 'r', sponge: 'r', jam: 'r', crunch: 'l' };
 
 /** no celular a face ocupa a largura: legendas entram por cima dela, com deslocamento curto */
 const NARROW: Record<LayerKey, [number, number]> = {
-  gold: [40, -26],
-  shell: [26, 34],
-  guava: [44, -40],
-  cream: [30, 40],
+  gold: [34, -24],
+  coat: [24, 0],
+  cream: [30, -6],
+  jam: [30, -10],
+  sponge: [30, 10],
+  crunch: [24, 30],
 };
 
 /** elementos do DOM das legendas; o Hero registra, o loop do WebGL escreve */
@@ -33,11 +36,12 @@ export function placeLayers(f: Frame, w: number, h: number) {
   root.style.opacity = String(show);
   if (show <= 0) return;
 
-  // silhueta da face do corte na tela: ápice e os dois cantos da base
+  // silhueta da face do corte na tela: os quatro cantos do retângulo
   const pts = [
-    [0, H, 0],
-    [0, 0, B],
-    [0, 0, -B],
+    [0, H, R],
+    [0, H, -R],
+    [0, 0, R],
+    [0, 0, -R],
   ].map((q) => project(f, toWorld(q as [number, number, number], f.offL, f.angL), w, h));
   const minX = Math.min(...pts.map((p) => p.x));
   const maxX = Math.max(...pts.map((p) => p.x));
@@ -63,7 +67,8 @@ export function placeLayers(f: Frame, w: number, h: number) {
       ly = clamp(p.y + (key === 'gold' ? -10 : 0), 100, h - 40);
     }
 
-    const local = clamp((f.macro - 0.55 - i * 0.07) / 0.18);
+    // seis legendas: entram em sequência curta para a última fechar antes do fim do macro
+    const local = clamp((f.macro - 0.55 - i * 0.045) / 0.18);
     label.style.transform = `translate3d(${lx.toFixed(1)}px, ${ly.toFixed(1)}px, 0)`;
     label.style.opacity = String(local);
     label.dataset.side = side;

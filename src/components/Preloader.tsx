@@ -6,17 +6,17 @@ import Monogram from './Monogram';
 
 const WORD = 'MAISON DOCE';
 
-/** primeiro quadro do bombom desenhado (shader compilado) */
+/** primeiro quadro do bolo desenhado (shader compilado) */
 const glReady = () =>
   new Promise<void>((resolve) => {
     if ((window as unknown as { __glReady?: boolean }).__glReady) return resolve();
-    window.addEventListener('bonbon:ready', () => resolve(), { once: true });
+    window.addEventListener('cake:ready', () => resolve(), { once: true });
   });
 
 /**
  * A caixa do ateliê: tampa de ganache com o monograma em creme. O oval se
- * desenha como traço de caneta enquanto o bombom compila; depois a tampa
- * se abre em duas e o bombom nasce do papel.
+ * desenha como traço de caneta enquanto o bolo compila; depois a tampa
+ * se abre em duas e o bolo nasce do papel.
  */
 export default function Preloader() {
   const root = useRef<HTMLDivElement>(null);
@@ -38,7 +38,7 @@ export default function Preloader() {
     const maxTime = new Promise((r) => setTimeout(r, 9000));
     const assets = Promise.all([
       document.fonts?.ready,
-      import('../gl/Bonbon').then(() => Promise.race([glReady(), maxTime])),
+      import('../gl/Cake').then(() => Promise.race([glReady(), maxTime])),
       minTime,
     ]);
 

@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { LITE, REDUCED, damp } from '../lib/env';
 import { onReady, signals } from '../lib/scroller';
 import AdaptiveDpr from './AdaptiveDpr';
-import { fragment, vertex } from './bonbonShader';
+import { fragment, vertex } from './cakeShader';
 import { frameAt, introRise, type Frame } from './timeline';
 import { placeLayers, resetLayerWidths } from './layers';
 import { noiseTexture } from './noise';
@@ -110,7 +110,7 @@ export function Scene({ frame }: { frame?: (aspect: number) => Frame }) {
     // o segundo quadro só chega depois que o programa compilou: avisa o preloader
     if (++s.frames === 2) {
       (window as unknown as { __glReady?: boolean }).__glReady = true;
-      window.dispatchEvent(new Event('bonbon:ready'));
+      window.dispatchEvent(new Event('cake:ready'));
     }
 
     // contador para medir a taxa de desenho (só no dev)
@@ -137,7 +137,7 @@ export function Scene({ frame }: { frame?: (aspect: number) => Frame }) {
 }
 
 /** o canvas só desenha enquanto o hero está na tela */
-export default function Bonbon() {
+export default function Cake() {
   const host = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(true);
 
@@ -158,7 +158,7 @@ export default function Bonbon() {
   const max = Math.min(window.devicePixelRatio || 1, LITE ? 1.25 : 1.5);
 
   return (
-    <div className="bonbon" ref={host} aria-hidden="true">
+    <div className="cake" ref={host} aria-hidden="true">
       <Canvas
         frameloop={visible ? 'demand' : 'never'}
         dpr={max}

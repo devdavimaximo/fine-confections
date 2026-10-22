@@ -15,7 +15,7 @@ export function scrollToId(id: string, duration = 1.8, offset = 0) {
 
 /** estado compartilhado entre DOM (ScrollTrigger) e WebGL (useFrame) sem re-render */
 export const signals = {
-  /** 0..1 ao longo do hero fixado: o corte do bombom */
+  /** 0..1 ao longo do hero fixado: o corte do bolo */
   cut: 0,
   /** instante (performance.now) em que o preloader saiu */
   introAt: -1,

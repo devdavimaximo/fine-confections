@@ -14,7 +14,7 @@ import Hero from './components/Hero';
 import Manifesto from './components/Manifesto';
 import Mesa from './components/Mesa';
 import Cardapio from './components/Cardapio';
-import Torre from './components/Torre';
+import Produto from './components/Produto';
 import Degustacao from './components/Degustacao';
 import Planner from './components/Planner';
 import Faq from './components/Faq';
@@ -80,7 +80,7 @@ export default function App() {
         <Manifesto />
         <Mesa />
         <Cardapio />
-        <Torre />
+        <Produto />
         <Degustacao />
         <Planner />
         <Faq />

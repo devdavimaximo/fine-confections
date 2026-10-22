@@ -39,8 +39,8 @@ export default function Manifesto() {
       </h2>
 
       <div className="casa__grid">
-        <figure className="casa__oval" id="bombom-real" data-veil>
-          <Img src="queijobriedentro" alt="Bombom de queijo brie com goiabada cortado ao meio, mostrando o recheio" sizes="(max-width: 899px) 70vw, 30vw" />
+        <figure className="casa__oval" id="foto-real" data-veil>
+          <Img src="macarons" alt="Dois macarons de chocolate empilhados, o de cima mordido, mostrando o recheio de caramelo" sizes="(max-width: 899px) 70vw, 30vw" />
           <figcaption className="casa__badge">{hero.realBadge}</figcaption>
         </figure>
         <figure className="casa__arch" data-veil="0.2">

@@ -24,7 +24,6 @@
 
   --ouro: #a98336;
   --ouro-2: #d8b86d;
-  --goiaba: #7d1f1c;
 
   --serif: 'Cormorant Garamond', 'Cormorant', Garamond, 'Times New Roman', serif;
   --sans: 'Jost', 'Futura', ui-sans-serif, system-ui, sans-serif;
@@ -148,7 +147,7 @@ main {
 
 /* grão do papel. Mistura normal (não multiply) e só do tamanho da tela: sobre um
    canvas que muda a cada quadro, multiply numa camada 4× a tela custava ~10 fps
-   na torre. No papel claro o resultado é praticamente o mesmo. */
+   no 3D. No papel claro o resultado é praticamente o mesmo. */
 .grain {
   position: fixed;
   inset: 0;
@@ -707,17 +706,17 @@ main {
   background: var(--paper);
 }
 
-.bonbon {
+.cake {
   position: absolute;
   inset: 0;
   z-index: 2;
 }
 
-.bonbon canvas {
+.cake canvas {
   display: block;
 }
 
-/* o nome fica atrás do bombom: o canvas é transparente fora dele */
+/* o nome fica atrás do bolo: o canvas é transparente fora dele */
 .hero__title {
   position: absolute;
   inset: 0;
@@ -877,7 +876,7 @@ main {
   visibility: hidden;
 }
 
-/* aviso de que o bombom é uma animação; leva até a foto real em "A casa" */
+/* aviso de que o bolo é uma animação; leva até a foto real em "A casa" */
 .hero__note {
   position: absolute;
   z-index: 5;
@@ -1312,11 +1311,6 @@ main {
   margin-bottom: clamp(48px, 9vh, 110px);
 }
 
-.tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px clamp(18px, 2.4vw, 40px);
-}
 
 .tabs__tab {
   position: relative;
@@ -1813,183 +1807,67 @@ main {
 }
 
 /* ==========================================================================
-   IV · Torre de macarons
+   IV · Produto-assinatura (bem-casado)
    ========================================================================== */
 
-.torre {
+.produto {
   position: relative;
   background: var(--paper);
   padding: clamp(110px, 16vh, 200px) var(--pad) clamp(90px, 14vh, 180px);
 }
 
-/* abertura dos macarons: foto real grande, texto e três fotos menores */
-.mac {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  column-gap: clamp(16px, 2vw, 32px);
-  row-gap: clamp(36px, 6vh, 64px);
-  align-items: end;
-}
-
-.mac__hero {
-  position: relative;
-  grid-column: 1 / span 5;
-  grid-row: 1 / span 2;
-  align-self: start;
-  aspect-ratio: 0.82;
-  border-radius: 999px 999px 0 0;
-  overflow: hidden;
-  background: var(--creme);
-}
-
-.mac__hero img,
-.mac__frame img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.mac__copy {
-  grid-column: 7 / span 6;
-  grid-row: 1;
-  display: grid;
-  gap: 22px;
-  padding-top: 4vh;
-}
-
-.mac__title {
-  font-size: clamp(50px, 6.4vw, 118px);
-}
-
-.mac__body {
-  font-family: var(--serif);
-  font-size: clamp(21px, 1.7vw, 27px);
-  line-height: 1.3;
-  color: var(--ink-2);
-  max-width: 32ch;
-}
-
-.mac__facts {
-  display: grid;
-  grid-template-columns: repeat(3, auto);
-  justify-content: start;
-  gap: clamp(20px, 3vw, 48px);
-  padding-top: 18px;
-  border-top: 1px solid var(--line);
-}
-
-.mac__facts li {
-  display: grid;
-  gap: 2px;
-}
-
-.mac__facts strong {
-  font-family: var(--serif);
-  font-weight: 300;
-  font-size: clamp(34px, 3vw, 50px);
-  line-height: 1;
-  color: var(--praline);
-}
-
-.mac__facts span {
-  font-size: 10.5px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--ink-2);
-}
-
-.mac__strip {
-  grid-column: 7 / span 6;
-  grid-row: 2;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: clamp(12px, 1.4vw, 22px);
-  align-items: end;
-}
-
-.mac__fig {
-  display: grid;
-  gap: 10px;
-}
-
-.mac__frame {
-  aspect-ratio: 0.78;
-  overflow: hidden;
-  background: var(--creme);
-}
-
-.mac__fig--0 .mac__frame {
-  border-radius: 999px;
-}
-
-.mac__fig--1 .mac__frame {
-  aspect-ratio: 0.7;
-}
-
-.mac__fig--2 .mac__frame {
-  border-radius: 999px 999px 0 0;
-}
-
-.mac__fig figcaption {
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 16px;
-  color: var(--ink-2);
-}
-
-/* a partir daqui é demonstração: separa bem do que é foto */
-.torre__demo {
+/* simulação: separa bem do que é foto */
+.produto__demo {
   display: flex;
   align-items: center;
   gap: 14px;
-  margin: clamp(80px, 13vh, 150px) 0 clamp(20px, 3vh, 36px);
+  margin: clamp(24px, 4vh, 48px) 0 clamp(20px, 3vh, 36px);
   font-size: 11px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--ink-2);
 }
 
-.torre__demo span {
+.produto__demo span {
   width: 7px;
   height: 7px;
   border-radius: 50%;
   border: 1px solid var(--ouro);
 }
 
-.torre__demo::after {
+.produto__demo::after {
   content: '';
   flex: 1;
   height: 1px;
   background: var(--line);
 }
 
-.torre__grid {
+.produto__grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   column-gap: clamp(16px, 2vw, 32px);
   align-items: start;
 }
 
-.torre__stage {
+.produto__stage {
   grid-column: 1 / span 7;
   position: sticky;
   top: 0;
   height: 100vh;
   height: 100svh;
-  margin-top: 0;
 }
 
-.tower {
+.product3d {
   position: absolute;
   inset: 0;
   touch-action: pan-y;
 }
 
-.tower canvas {
+.product3d canvas {
   display: block;
 }
 
-.torre__hint {
+.produto__hint {
   position: absolute;
   left: 0;
   bottom: 6vh;
@@ -2003,50 +1881,51 @@ main {
   pointer-events: none;
 }
 
-.torre__hint span {
+.produto__hint span {
   width: 34px;
   height: 1px;
   background: var(--ink-3);
 }
 
-.torre__count {
+.produto__focus {
   position: absolute;
-  right: 0;
-  bottom: 5vh;
-  display: flex;
-  align-items: flex-end;
-  gap: 12px;
-  pointer-events: none;
-}
-
-.torre__count strong {
-  font-family: var(--serif);
-  font-weight: 300;
-  font-size: clamp(64px, 6.4vw, 116px);
-  line-height: 0.8;
-}
-
-.torre__count span {
+  left: 0;
+  top: calc(var(--hud-h) + 3vh);
+  padding: 9px 16px 8px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--paper) 80%, transparent);
   font-size: 10.5px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--ink-2);
-  line-height: 1.6;
-  padding-bottom: 4px;
+  transition:
+    background-color 0.5s var(--ease),
+    color 0.5s var(--ease),
+    border-color 0.5s var(--ease);
 }
 
-.torre__panel {
+.produto__focus:hover,
+.produto__focus[aria-pressed='true'] {
+  background: var(--ganache);
+  border-color: var(--ganache);
+  color: var(--bone);
+}
+
+
+
+
+.produto__panel {
   grid-column: 8 / span 5;
   display: grid;
   gap: clamp(36px, 6vh, 64px);
   padding-top: 2vh;
 }
 
-.torre__title {
+.produto__title {
   font-size: clamp(50px, 6.2vw, 116px);
 }
 
-.torre__body {
+.produto__body {
   font-family: var(--serif);
   font-size: 23px;
   line-height: 1.3;
@@ -2105,83 +1984,66 @@ main {
   min-height: 1.2em;
 }
 
-.sizes {
+
+
+
+
+
+
+
+
+.finish {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 8px;
+  gap: 12px;
 }
 
-.sizes__opt {
-  display: grid;
-  justify-items: center;
-  gap: 2px;
-  padding: 14px 0 12px;
-  border: 1px solid var(--line-2);
-  border-radius: 999px 999px 0 0;
-  transition:
-    background-color 0.5s var(--ease),
-    color 0.5s var(--ease),
-    border-color 0.5s var(--ease);
+.finish__k {
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--ink-2);
 }
 
-.sizes__opt b {
+.finish__k:not(:first-child) {
+  margin-top: 10px;
+}
+
+.finish__k em {
   font-family: var(--serif);
-  font-weight: 400;
-  font-size: 30px;
-  line-height: 1;
+  font-size: 18px;
+  color: var(--ink);
+  margin-left: 6px;
 }
 
-.sizes__opt span {
-  font-size: 9px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--ink-3);
-  transition: color 0.5s;
+.tints {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
-.sizes__opt:hover {
-  border-color: var(--ink);
-}
-
-.sizes__opt.is-on {
-  background: var(--ganache);
-  border-color: var(--ganache);
-  color: var(--bone);
-}
-
-.sizes__opt.is-on span {
-  color: var(--bone-2);
-}
-
-.swatches {
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  gap: clamp(8px, 0.9vw, 14px);
-}
-
-.swatch {
+.tint {
   position: relative;
-  aspect-ratio: 1;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: var(--c);
   box-shadow:
-    inset 0 -6px 10px rgba(0, 0, 0, 0.08),
-    inset 0 4px 8px rgba(255, 255, 255, 0.35);
-  display: grid;
-  place-items: center;
+    inset 0 -6px 10px rgba(0, 0, 0, 0.1),
+    inset 0 4px 8px rgba(255, 255, 255, 0.3),
+    0 0 0 1px rgba(42, 27, 19, 0.1);
   transition: transform 0.5s var(--ease);
 }
 
-.swatch span {
-  font-size: 11px;
-  font-weight: 450;
-  color: var(--t, rgba(42, 27, 19, 0.7));
+/* fita: um brilho em faixa, como cetim */
+.tint--satin {
+  background:
+    linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.42) 46%, transparent 62%),
+    var(--c);
 }
 
-.swatch::after {
+.tint::after {
   content: '';
   position: absolute;
-  inset: -4px;
+  inset: -5px;
   border-radius: 50%;
   border: 1.5px solid var(--ink);
   opacity: 0;
@@ -2191,74 +2053,88 @@ main {
     transform 0.5s var(--ease);
 }
 
-.swatch:hover {
+.tint:hover {
   transform: scale(1.08);
 }
 
-.swatch.is-on::after {
+.tint.is-on::after {
   opacity: 1;
   transform: none;
 }
 
-.swatch i {
-  position: absolute;
-  right: -6px;
-  top: -6px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--ganache);
-  color: var(--bone);
-  font-style: normal;
-  font-size: 10px;
-  display: grid;
-  place-items: center;
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
-.modes {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.engrave {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  border: 1px solid var(--line-2);
-  border-radius: 999px;
-  padding: 4px;
-  gap: 4px;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: end;
 }
 
-.modes__opt {
-  display: grid;
-  gap: 0;
-  padding: 10px 8px 9px;
-  border-radius: 999px;
+.engrave span {
+  grid-column: 1 / -1;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--ink-2);
+}
+
+.engrave input {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--line-2);
+  background: none;
+  padding: 6px 0 8px;
   font-family: var(--serif);
-  font-size: 19px;
-  line-height: 1.1;
-  transition:
-    background-color 0.5s var(--ease),
-    color 0.5s var(--ease),
-    opacity 0.4s;
+  font-style: italic;
+  font-size: 26px;
+  color: var(--ink);
+  outline: none;
+  border-radius: 0;
+  transition: border-color 0.4s var(--ease);
 }
 
-.modes__opt small {
-  font-family: var(--sans);
-  font-size: 9px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+.engrave input::placeholder {
   color: var(--ink-3);
 }
 
-.modes__opt.is-on {
-  background: var(--ganache);
-  color: var(--bone);
+.engrave input:focus {
+  border-color: var(--ouro);
 }
 
-.modes__opt.is-on small {
-  color: var(--bone-2);
+.engrave small {
+  font-size: 11px;
+  color: var(--ink-3);
+  padding-bottom: 10px;
 }
 
-.modes__opt:disabled {
-  opacity: 0.35;
-  cursor: default;
-}
 
 .flavors {
   display: flex;
@@ -3247,84 +3123,40 @@ main {
     background: var(--marfim);
   }
 
-  .torre__grid {
+  .produto__grid {
     grid-template-columns: 1fr;
   }
 
-  .mac {
-    grid-template-columns: 1fr;
-    row-gap: 28px;
+  .produto__demo {
+    margin-top: 8px;
   }
 
-  .mac__hero,
-  .mac__copy,
-  .mac__strip {
+  .produto__stage {
     grid-column: 1;
-    grid-row: auto;
-  }
-
-  .mac__copy {
-    order: -1;
-    padding-top: 0;
-    gap: 16px;
-  }
-
-  .mac__hero {
-    aspect-ratio: 0.86;
-  }
-
-  .mac__facts strong {
-    font-size: 30px;
-  }
-
-  .mac__facts span {
-    font-size: 9px;
-    letter-spacing: 0.14em;
-  }
-
-  .mac__strip {
-    gap: 10px;
-  }
-
-  .mac__fig figcaption {
-    font-size: 13px;
-  }
-
-  .torre__demo {
-    margin-top: 64px;
-  }
-
-  .torre__stage {
-    grid-column: 1;
-    height: 56vh;
-    height: 56svh;
+    height: 58vh;
+    height: 58svh;
     margin: 0 calc(-1 * var(--pad));
     top: 0;
     z-index: 2;
     background: linear-gradient(var(--paper) 86%, transparent);
   }
 
-  .torre__hint {
+  .produto__hint {
     left: var(--pad);
     bottom: 5vh;
   }
 
-  .torre__count {
-    right: var(--pad);
-    bottom: 4vh;
+  .produto__focus {
+    left: var(--pad);
+    top: calc(var(--hud-h) + 4px);
   }
 
-  .torre__count strong {
-    font-size: 54px;
-  }
 
-  .torre__panel {
+
+  .produto__panel {
     grid-column: 1;
   }
 
-  .sizes {
-    grid-template-columns: repeat(3, 1fr);
-  }
 
   .degust__grid {
     grid-template-columns: 1fr;
@@ -3399,22 +3231,11 @@ main {
     gap: 6px;
   }
 
-  .swatches {
-    grid-template-columns: repeat(8, 1fr);
-    gap: 7px;
+  .tint {
+    width: 36px;
+    height: 36px;
   }
 
-  .swatch span {
-    font-size: 9px;
-  }
-
-  .modes__opt {
-    font-size: 16px;
-  }
-
-  .modes__opt small {
-    display: none;
-  }
 
   .btn--lg {
     width: 100%;

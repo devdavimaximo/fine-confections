@@ -21,7 +21,7 @@ export const nav = [
   { id: 'casa', label: 'A casa' },
   { id: 'mesa', label: 'A mesa' },
   { id: 'cardapio', label: 'Cardápio' },
-  { id: 'torre', label: 'Macarons' },
+  { id: 'bem-casado', label: 'Bem-casados' },
   { id: 'degustacao', label: 'Degustação' },
   { id: 'planeje', label: 'Planeje' },
 ];
@@ -30,24 +30,29 @@ export const hero = {
   kicker: 'Atelier de doces finos',
   lede: 'Especialistas em doces finos para casamentos, formaturas e celebrações que pedem o melhor da confeitaria.',
   hint: 'Role para ver por dentro',
-  /** o bombom do hero é 3D: avisar e levar até a foto de verdade */
+  /** o bolo do hero é 3D: avisar e levar até a foto de verdade */
   note: 'Animação ilustrativa',
   noteCta: 'ver fotos reais',
   realBadge: 'Foto real',
 };
 
-/** o corte do bombom, em quatro tempos (ver gl/timeline.ts) */
+/**
+ * o corte do bolo, em quatro tempos (ver gl/timeline.ts)
+ * DEMO: bolo ilustrativo, não está no cardápio; troque pelo bolo-assinatura do cliente
+ */
 export const cut = {
   line: 'Todo doce fino guarda o melhor por dentro.',
-  tag: 'Lançamento',
-  name: 'Bombom de Queijo Brie com Goiabada',
-  price: 6.9,
-  text: 'O Romeu e Julieta, reescrito em chocolate branco: creme de queijo brie, goiabada no coração e ouro no topo.',
+  tag: 'Assinatura da casa',
+  name: 'Entremet Framboesa & Pistache',
+  priceNote: 'Sob encomenda',
+  text: 'Mousse de chocolate branco, pão de ló de pistache e geleia de framboesa, sob um veludo rosé com framboesas frescas e folha de ouro.',
   layers: {
-    gold: 'Folha de ouro',
-    shell: 'Casca de chocolate branco',
-    guava: 'Goiabada',
-    cream: 'Creme de queijo brie',
+    gold: 'Framboesas e folha de ouro',
+    coat: 'Veludo de chocolate branco',
+    cream: 'Mousse de chocolate branco',
+    sponge: 'Pão de ló de pistache',
+    jam: 'Geleia de framboesa',
+    crunch: 'Crocante de pistache',
   },
 };
 
@@ -156,87 +161,64 @@ export const menu: MenuGroup[] = [
       { slug: 'flakes-nutella', name: 'Flakes de Nutella Crocante', price: 5.5, isNew: true },
       { slug: 'ovomaltine', name: 'Bombom de Ovomaltine', price: 6.5, isNew: true },
       { slug: 'caixinha-pistache', name: 'Caixinha de Pistache', price: 6.9, isNew: true },
-      { slug: 'brie-goiabada', name: 'Bombom de Queijo Brie com Goiabada', price: 6.9, isNew: true },
     ],
   },
 ];
 
 export const menuCount = menu.reduce((n, g) => n + g.items.length, 0);
 
-/* ---------- torre de macarons ---------- */
+/* ---------- produto-assinatura: bem-casado ----------
+   Um produto só, com variações de aparência. Para adaptar a outro ateliê basta
+   editar as listas abaixo (cores, sabores, textos, preço): o 3D lê tudo daqui.
+   DEMO: sabores e preço são ilustrativos; troque pelos do cliente. */
 
-/** andares → macarons e valor; todos os pedidos incluem a torre */
-export const towerSizes = [
-  { floors: 5, units: 65, price: 850 },
-  { floors: 6, units: 85, price: 1000 },
-  { floors: 7, units: 115, price: 1300 },
-  { floors: 8, units: 145, price: 1500 },
-  { floors: 9, units: 170, price: 1750 },
-  { floors: 10, units: 210, price: 1950 },
-];
-
-/** as 32 cores da cartela, na ordem numerada do cardápio (amostradas do PDF) */
-export const macaronColors = [
-  '#e99f74', '#ad7791', '#e3c3ce', '#f9d977', '#e8834d', '#606ba3', '#bd9d90', '#85c390',
-  '#67473a', '#8f5e3e', '#912f62', '#a72d30', '#9b7663', '#63c0c8', '#ecacad', '#c1c998',
-  '#fdf9ed', '#98d1c2', '#65aaba', '#e05f8d', '#ac5582', '#efdccb', '#a186af', '#dddb90',
-  '#faf07d', '#f0d2ba', '#735070', '#e98d9a', '#f9e6a2', '#26b5bd', '#cb6b4b', '#8eac7a',
-];
-
-/** sabores do cardápio; `fill` é só a cor do recheio na torre 3D */
-export const macaronFlavors = [
-  { name: 'Chocolate branco', fill: '#f1e6cf' },
-  { name: 'Amoras silvestres', fill: '#6d2a4a' },
-  { name: 'Banoffee', fill: '#c9935a' },
-  { name: 'Bergamota', fill: '#f0c66b' },
-  { name: 'Blueberry', fill: '#4b3f73' },
-  { name: 'Brigadeiro de avelã', fill: '#6b4228' },
-  { name: 'Brigadeiro sem lactose', fill: '#5a3423', tag: 'sem lactose' },
-  { name: 'Chocolate branco com nozes', fill: '#e6d3b0' },
-  { name: 'Caramelo com flor de sal', fill: '#c07a3a' },
-  { name: 'Cheesecake', fill: '#f3e3bf' },
-  { name: 'Chiclete', fill: '#f2a6c8' },
-  { name: 'Chocolate ao leite', fill: '#7a4a2c' },
-  { name: 'Maracujá', fill: '#f2b630' },
-  { name: 'Nutelinho', fill: '#6e3f24' },
-  { name: 'Doce de leite', fill: '#c8894a' },
-  { name: 'Nutella', fill: '#5f3620' },
-  { name: 'Doce de leite sem lactose', fill: '#c08447', tag: 'sem lactose' },
-  { name: 'Dark com chocolate', fill: '#3a2018' },
-  { name: 'Framboesa', fill: '#c23552' },
-  { name: 'Pistache', fill: '#a6bf5a' },
-  { name: 'Frutas do bosque', fill: '#8a2846' },
-  { name: 'Red velvet', fill: '#9e2b33' },
-  { name: 'Iogurte com amarena', fill: '#e7c6cf' },
-  { name: 'Tiramisù', fill: '#b48a64' },
-  { name: 'Limão siciliano', fill: '#e9e27a' },
-  { name: 'Creme brûlée', fill: '#e8c27f' },
-] as { name: string; fill: string; tag?: string }[];
-
-export const torre = {
-  label: 'Macarons',
-  /** abertura da seção: as fotos reais da casa */
-  intro: {
-    kicker: 'Fotos reais',
-    title: ['Macarons', 'na cor da sua festa.'],
-    body: '26 sabores e 32 cores na cartela, para combinar com a decoração do seu evento. Servidos em torre, de 5 a 10 andares, e todos os pedidos incluem a torre.',
-    facts: [
-      { n: '26', l: 'sabores' },
-      { n: '32', l: 'cores na cartela' },
-      { n: '65–210', l: 'macarons por torre' },
-    ],
-    hero: { src: 'macarons6', alt: 'Torre de macarons de pistache em mesa de evento, com pavlovas e brigadeiros ao lado', caption: 'Torre de pistache, servida em evento' },
-    photos: [
-      { src: 'macarons5', alt: 'Macarons brancos com recheio de pistache', caption: 'Pistache' },
-      { src: 'macarons2', alt: 'Três macarons mordidos empilhados, mostrando os recheios', caption: 'Por dentro' },
-      { src: 'macarons4', alt: 'Três macarons em tons de rosa', caption: 'Cores da cartela' },
-    ],
-  },
-  demo: 'Simulação 3D · monte a sua',
-  title: ['Monte a', 'sua torre.'],
-  body: 'Escolha o tamanho, as cores da cartela e os sabores. Todos os pedidos incluem a torre.',
+export const produto = {
+  label: 'Bem-casados',
+  eyebrow: 'Para o seu sim',
+  demo: 'Simulação 3D · monte o seu',
+  title: ['Bem-casado', 'com o seu nome.'],
+  body: 'O doce que deseja felicidade aos noivos: pão de ló macio, recheio cremoso e casquinha de açúcar, embrulhado à mão. Escolha o papel, a fita, o sabor e a tag com os nomes.',
   hintDrag: 'arraste para girar',
+  /** DEMO: valor por unidade; deixe `null` para mostrar "sob consulta" */
+  price: 6.9 as number | null,
+  /** a tag pendurada no laço */
+  tag: { namesPlaceholder: 'Ana & Pedro', datePlaceholder: '12.09.2027', max: 22 },
+  guests: { min: 50, max: 400, step: 10, initial: 150 },
+  /** combinação que aparece primeiro (índices nas listas abaixo) */
+  initial: { paper: 2, ribbon: 0, flavor: 0 },
 };
+
+/** papel crepom do embrulho */
+export const produtoPapers = [
+  { name: 'Branco', hex: '#f4f1ea' },
+  { name: 'Marfim', hex: '#ece0c9' },
+  { name: 'Rosé', hex: '#e5b9b1' },
+  { name: 'Lavanda', hex: '#bfb2d2' },
+  { name: 'Sálvia', hex: '#aab79c' },
+  { name: 'Serenity', hex: '#aebfd3' },
+  { name: 'Champanhe', hex: '#dcc49a' },
+  { name: 'Marsala', hex: '#7b3036' },
+];
+
+/** fita de cetim do laço (a primeira de cada lista é o ponto de partida) */
+export const produtoRibbons = [
+  { name: 'Ouro', hex: '#c6a052', metallic: true },
+  { name: 'Marfim', hex: '#f1e8d8' },
+  { name: 'Rosé', hex: '#d49b93' },
+  { name: 'Oliva', hex: '#6c7350' },
+  { name: 'Azul', hex: '#5d7290' },
+  { name: 'Vinho', hex: '#5a1d24' },
+];
+
+/** recheio: a cor que aparece no corte; `speck` = pedacinhos (nozes, raspas, sementes) */
+export const produtoFlavors = [
+  { name: 'Doce de leite', fill: '#b9773a' },
+  { name: 'Brigadeiro', fill: '#4a2a1c' },
+  { name: 'Doce de leite com nozes', fill: '#b06f36', speck: '#5e3a1e' },
+  { name: 'Limão siciliano', fill: '#ece08a', speck: '#c9c25a' },
+  { name: 'Frutas vermelhas', fill: '#a3263c', speck: '#4d0c18' },
+  { name: 'Pistache', fill: '#a7b45c', speck: '#6f7d35' },
+] as { name: string; fill: string; speck?: string }[];
 
 /* ---------- degustação ---------- */
 

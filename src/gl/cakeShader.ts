@@ -1,21 +1,21 @@
-import { B, H } from './timeline';
+import { H, R } from './timeline';
 
 /**
- * Bombom de Queijo Brie com Goiabada, todo em SDF (raymarching num quad de tela).
- * Calibrado contra as fotos da casa (fotos/queijobrie*.jpg, números em
- * scripts/.ref-colors.txt):
- *   - casca fina de chocolate branco, cor de manteiga, acetinada, com
- *     subsurface: terminador quente e bordas que acendem contra a luz
- *   - corte com creme dourado e granulado (grumos, migalhas, poros) e goiabada
- *     em gota, quase preta no fundo, úmida, com veios de creme no alto
- *   - folha de ouro: lâminas finas amassadas (nível zero de um ruído), não um bloco
+ * Entremet de Framboesa e Pistache, todo em SDF (raymarching num quad de tela).
+ *   - cilindro de borda macia com cobertura veludo rosé: matte, pontilhado do
+ *     spray de chocolate, brilho rasante na silhueta em vez de reflexo
+ *   - no topo, um arranjo fora do centro: três framboesas com drupelas, folha de
+ *     ouro amassada (lâminas finas, nível zero de um ruído) e lascas de pistache
+ *   - o corte: base crocante, pão de ló de pistache com alvéolos, geleia de
+ *     framboesa brilhante com sementes e mousse de chocolate branco envolvendo
+ *     os recheios até a borda, como num entremet de vitrine
  *   - chão transparente: só sombra e contato vão para o alfa, o papel é o DOM
  * Luz-chave vem do timeline (uL): atrás-direita na vitrine, frontal no corte.
  *
  * Compilação: no Windows o WebGL passa pelo compilador D3D, que inlina cada
  * chamada e desenrola cada laço que conseguir. Por isso todos os laços começam
  * em ZERO (uniform), o ruído vem de textura, map() percorre as duas metades num
- * laço e sombra/AO/translucidez usam mapLite (sem relevo).
+ * laço e sombra/AO usam mapLite (sem relevo nem decoração detalhada).
  */
 
 export const vertex = /* glsl */ `
@@ -27,10 +27,10 @@ export const fragment = (lite: boolean) => /* glsl */ `
 
   #define STEPS ${lite ? 96 : 140}
   #define SHADOW_STEPS ${lite ? 16 : 28}
-  #define B ${B.toFixed(4)}
+  #define R ${R.toFixed(4)}
   #define H ${H.toFixed(4)}
-  #define RND 0.058
-  #define SHELL 0.036
+  #define RND 0.03
+  #define SHELL 0.026
   #define PI 3.14159265
 
   uniform vec2 uRes;
@@ -75,7 +75,7 @@ export const fragment = (lite: boolean) => /* glsl */ `
   vec2 hash2(vec2 c) {
     return textureLod(uNoise, (c * vec2(1.0, 3.0) + 0.5) / 256.0, 0.0).xy;
   }
-  // células no plano do corte: poros e migalhas do creme
+  // células no plano do corte: alvéolos do pão de ló, sementes da geleia
   float cells(vec2 p) {
     vec2 i = floor(p);
     vec2 f = fract(p);
@@ -87,97 +87,127 @@ export const fragment = (lite: boolean) => /* glsl */ `
     }
     return sqrt(d);
   }
+  float hash1(float x) { return fract(sin(x * 12.9898) * 43758.5453); }
 
   /* ---------- forma ---------- */
 
-  // pirâmide exata de base 1 (Inigo Quilez)
-  float sdPyramid(vec3 p, float h) {
-    float m2 = h * h + 0.25;
-    p.xz = abs(p.xz);
-    p.xz = (p.z > p.x) ? p.zx : p.xz;
-    p.xz -= 0.5;
-    vec3 q = vec3(p.z, h * p.y - 0.5 * p.x, h * p.x + 0.5 * p.y);
-    float s = max(-q.x, 0.0);
-    float t = clamp((q.y - 0.5 * p.z) / (m2 + 0.25), 0.0, 1.0);
-    float a = m2 * (q.x + s) * (q.x + s) + q.y * q.y;
-    float b = m2 * (q.x + 0.5 * t) * (q.x + 0.5 * t) + (q.y - m2 * t) * (q.y - m2 * t);
-    float d2 = min(q.y, -q.x * m2 - q.y * 0.5) > 0.0 ? 0.0 : min(a, b);
-    return sqrt((d2 + q.z * q.z) / m2) * sign(max(q.z, -p.y));
+  // cilindro de borda arredondada; base afundada RND abaixo do papel: a aresta
+  // de baixo fica seca, rente ao chão, e a de cima tem a curva macia da mousse
+  float cake(vec3 q) {
+    vec2 d = vec2(length(q.xz) - (R - RND), abs(q.y - 0.5 * (H - RND)) - 0.5 * (H - RND));
+    return min(max(d.x, d.y), 0.0) + length(max(d, 0.0)) - RND;
   }
 
-  float pyr(vec3 q) {
-    const float s = 2.0 * (B - RND);
-    // base afundada RND abaixo do papel: a aresta de baixo fica seca, rente ao chão
-    return sdPyramid((q + vec3(0.0, RND, 0.0)) / s, H / s) * s - RND;
+  // as camadas, de baixo para cima (alturas absolutas, H = 1,12):
+  //   crocante 0–0,085 · pão de ló 0,085–0,30 · geleia 0,30–0,37 · mousse 0,37–0,60
+  //   pão de ló 0,60–0,80 · geleia 0,80–0,86 · mousse até a cobertura
+  // as divisas ondulam um pouco: montado à mão, não fatiado por máquina
+  float band(float y, float a, float b) {
+    return smoothstep(a - 0.0025, a + 0.0025, y) - smoothstep(b - 0.0025, b + 0.0025, y);
+  }
+  void layers(vec3 q, float di, out float sponge, out float jam, out float crunch) {
+    float y = q.y + (noise(vec3(q.z * 2.4, q.x * 2.4, 7.3)) - 0.5) * 0.022;
+    // recheios recuados da borda: a mousse desce pelos lados e envolve tudo
+    float inset = smoothstep(SHELL + 0.04, SHELL + 0.05, di);
+    crunch = 1.0 - smoothstep(0.0825, 0.0875, y);
+    sponge = (band(y, 0.085, 0.3) + band(y, 0.6, 0.8)) * inset;
+    jam = (band(y, 0.3, 0.37) + band(y, 0.8, 0.86)) * inset;
   }
 
-  // goiabada: gota que afina para o alto e se inclina um pouco, borda irregular
-  float guava(vec3 q) {
-    vec3 c = q - vec3(0.0, H * 0.5, 0.03);
-    c.z += 0.18 * c.y;
-    float taper = 1.0 + 1.1 * max(c.y, 0.0);
-    vec3 r = vec3(B * 0.4, H * 0.34, B * 0.44);
-    vec3 s = vec3(c.x * taper, c.y, c.z * taper);
-    float e = (length(s / r) - 1.0) * r.x / taper;
-    float g = max(e, pyr(q) + 0.06);
-    return g + (noise(q * 5.0 + 3.1) - 0.5) * 0.045 + (noise(q * 16.0) - 0.5) * 0.014;
+  // miolo do pão de ló: alvéolos miúdos de tamanhos diferentes e, raros, uns furinhos maiores
+  float crumb(vec3 q) {
+    float pits = (1.0 - smoothstep(0.02, 0.3, cells(q.zy * 78.0))) * (0.45 + 0.55 * noise(q * 45.0 + 4.0));
+    float holes = smoothstep(0.74, 0.8, noise(q * vec3(70.0, 90.0, 70.0) + 2.0));
+    return max(pits, holes);
   }
 
-  // veios de creme dentro da goiabada, no alto da gota (o brie entra na fruta)
-  float marble(vec3 q) {
-    vec3 w = q * vec3(5.0, 13.0, 13.0) + vec3(0.0, 0.0, 2.3);
-    w += (noise(w * 0.7 + 5.0) - 0.5) * 1.6;
-    float m = smoothstep(0.76, 0.82, noise(w));
-    return m * smoothstep(H * 0.62, H * 0.74, q.y);
-  }
-
-  // relevo do corte: creme granulado com poros, goiabada lisa e um pouco saliente
+  // relevo do corte: mousse lisa com o rastro da faca, alvéolos do pão de ló,
+  // geleia lisa e saliente, lascas da base
   float cutDisp(vec3 q) {
-    float di = -pyr(q);
-    float g = guava(q);
-    float creamM = smoothstep(SHELL, SHELL + 0.02, di) * smoothstep(-0.005, 0.02, g);
-    float guavaM = 1.0 - smoothstep(-0.045, 0.0, g);
-    // creme: ondas largas e macias (é um creme, não um bolo); farelo só na base e junto da casca
-    float soft = fbm(q * 6.0) - 0.5;
-    float crumbZone = max(1.0 - smoothstep(0.04, H * 0.18, q.y), 1.0 - smoothstep(SHELL, SHELL + 0.05, di));
-    float crumbs = (fbm(q * 22.0) - 0.5) * crumbZone;
-    float creamD = soft * 0.018 + (noise(q * 14.0) - 0.5) * 0.004 + crumbs * 0.01;
-    // goiabada levemente afundada no creme, com fibras na direção da inclinação
-    float fib = noise(vec3(q.y * 7.0 + q.z * 2.0, q.z * 34.0 - q.y * 9.0, q.x * 6.0)) - 0.5;
-    // goiabada: pedaço firme e saliente, fibroso, com facetas onde a faca puxou
-    // fibras na diagonal da gota (a fruta foi cozida em pedaços e prensada)
-    vec3 fq = vec3(q.x * 6.0, q.y * 5.0 + q.z * 9.0, q.z * 20.0 - q.y * 14.0);
-    float ridge = 1.0 - abs(noise(fq + 1.7) * 2.0 - 1.0);
-    float guavaD = 0.01 + (noise(q * 4.0) - 0.5) * 0.02 + fib * 0.008 + ridge * 0.01 + (noise(q * 36.0) - 0.5) * 0.004 + marble(q) * 0.01;
-    return uOpen * (creamM * creamD + guavaM * guavaD);
+    float di = -cake(q);
+    float sponge, jam, crunch;
+    layers(q, di, sponge, jam, crunch);
+    float coat = 1.0 - smoothstep(SHELL, SHELL + 0.012, di);
+    float cream = clamp(1.0 - sponge - jam - crunch, 0.0, 1.0) * (1.0 - coat);
+    // a luz do corte chega rasante: qualquer dobra larga vira sombra, então a mousse é quase plana
+    float creamD = (noise(q * 7.0) - 0.5) * 0.0018 + (noise(vec3(q.y * 30.0, q.z * 3.0, 2.0)) - 0.5) * 0.0007;
+    float spongeD = 0.0;
+    if (sponge > 0.001) spongeD = -0.002 * crumb(q) + (noise(q * 40.0) - 0.5) * 0.003 - 0.002;
+    float jamD = 0.0025 + (noise(q * 12.0) - 0.5) * 0.0008;
+    float crunchD = crunch > 0.001 ? (fbm(q * 26.0) - 0.5) * 0.016 + (noise(q * 70.0) - 0.5) * 0.005 : 0.0;
+    return uOpen * (cream * creamD + sponge * spongeD + jam * jamD + crunch * (1.0 - coat) * crunchD);
   }
 
-  float hash1(float x) { return fract(sin(x * 12.9898) * 43758.5453); }
+  /* ---------- decoração do topo (só na metade esquerda, longe da faca) ---------- */
 
-  // folha de ouro: tufo de flocos. Cada floco é uma lâmina fina, enrugada por ruído,
-  // recortada num disco de borda irregular e inclinada ao acaso, como ouro amassado à mão
-  float gold(vec3 q, float side) {
-    vec3 c = (q - vec3(side * 0.03 * uOpen, H - 0.012, 0.0)) / 0.8;
-    float bound = (length(c / vec3(0.2, 0.14, 0.19)) - 1.0) * 0.14 * 0.8;
+  const vec3 DECO = vec3(-0.34, H, 0.16);
+
+  // framboesa: gota quase esférica coberta de drupelas em fileiras desencontradas
+  float berry(vec3 p, vec3 c, float sz, float spin) {
+    vec3 u = p - c;
+    float b = (length(u / vec3(1.0, 1.12, 1.0)) - sz) * 0.9;
+    if (b > 0.015) return b;
+    vec3 n = normalize(u);
+    float e = acos(clamp(n.y, -1.0, 1.0)) / PI * 7.0;
+    float a = (atan(n.z, n.x) + spin) / (2.0 * PI) * 11.0 + 0.5 * mod(floor(e), 2.0);
+    float g = sqrt(max(sin(fract(e) * PI) * sin(fract(a) * PI), 0.0));
+    return b - (g - 0.55) * sz * 0.17;
+  }
+
+  // folha de ouro: lâminas finas, enrugadas por ruído, recortadas em disco de borda
+  // irregular e inclinadas ao acaso entre as frutas, como ouro amassado à mão
+  float gold(vec3 q) {
+    vec3 c = (q - DECO - vec3(0.0, 0.0, 0.02)) / 0.8;
+    float bound = (length(c / vec3(0.3, 0.2, 0.28)) - 1.0) * 0.2 * 0.8;
     if (bound > 0.03) return bound;
-    float d = (length(c / vec3(0.06, 0.034, 0.056)) - 1.0) * 0.034;
-    for (int i = ZERO; i < 9; i++) {
-      float fi = float(i) * 1.618 + side * 0.37 + 3.0;
+    float d = 1e3;
+    for (int i = ZERO; i < 8; i++) {
+      float fi = float(i) * 1.618 + 4.0;
       vec3 h = vec3(hash1(fi * 3.1), hash1(fi * 5.7), hash1(fi * 9.3));
-      vec3 ctr = vec3((h.x - 0.5) * 0.17, 0.012 + h.y * 0.07, (h.z - 0.5) * 0.15);
+      vec3 ctr = vec3((h.x - 0.5) * 0.36, 0.03 + h.y * 0.1, (h.z - 0.5) * 0.34);
       float az = hash1(fi * 1.7) * 6.2832;
-      float tilt = 0.2 + hash1(fi * 2.9) * 0.75;
+      float tilt = 0.45 + hash1(fi * 2.9) * 0.8;
       vec3 nrm = vec3(cos(az) * sin(tilt), cos(tilt), sin(az) * sin(tilt));
       vec3 u = c - ctr;
       float k = dot(u, nrm);
       vec3 pu = u - nrm * k;
-      float rr = 0.05 + 0.04 * hash1(fi * 4.3);
-      float crump = (noise(u * 28.0 + fi) - 0.5) * 0.032 + (noise(u * 70.0 + fi) - 0.5) * 0.009;
+      float rr = 0.055 + 0.045 * hash1(fi * 4.3);
+      float crump = (noise(u * 28.0 + fi) - 0.5) * 0.03 + (noise(u * 70.0 + fi) - 0.5) * 0.008;
       float sheet = abs(k + crump) - 0.0021;
       float edge = length(pu) - rr * (0.75 + 0.5 * noise(pu * 22.0 + fi));
       d = min(d, max(sheet, edge));
     }
     return d * 0.8;
+  }
+
+  float sdRoundBox(vec3 p, vec3 b, float r) {
+    vec3 q = abs(p) - b + r;
+    return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0) - r;
+  }
+
+  // ids: 3 ouro · 4 framboesa · 5 pistache
+  vec2 decor(vec3 q) {
+    float bd = length(q - DECO - vec3(0.0, 0.05, 0.0)) - 0.3;
+    if (bd > 0.02) return vec2(bd, 4.0);
+    vec2 r = vec2(berry(q, DECO + vec3(0.0, 0.066, 0.0), 0.07, 0.0), 4.0);
+    r.x = min(r.x, berry(q, DECO + vec3(0.12, 0.06, -0.075), 0.064, 1.3));
+    r.x = min(r.x, berry(q, DECO + vec3(-0.1, 0.055, -0.1), 0.058, 2.6));
+    r.x = min(r.x, berry(q, DECO + vec3(0.04, 0.05, 0.12), 0.052, 4.1));
+    float g = gold(q);
+    if (g < r.x) r = vec2(g, 3.0);
+    // lascas de pistache espalhadas em volta do arranjo
+    for (int i = ZERO; i < 8; i++) {
+      float fi = float(i);
+      float ang = fi * 2.399 + 0.6;
+      float rad = 0.17 + 0.08 * hash1(fi * 7.1);
+      vec3 u = q - DECO - vec3(cos(ang) * rad, 0.006, sin(ang) * rad * 0.9);
+      float sp = hash1(fi * 3.7) * 3.0;
+      u.xz = mat2(cos(sp), -sin(sp), sin(sp), cos(sp)) * u.xz;
+      float s = 0.011 + 0.006 * hash1(fi * 5.3);
+      float pd = sdRoundBox(u, vec3(s, s * 0.55, s * 0.8), 0.004) + (noise(u * 140.0 + fi) - 0.5) * 0.002;
+      if (pd < r.x) r = vec2(pd, 5.0);
+    }
+    return r;
   }
 
   vec3 toLocal(vec3 p, vec3 off, vec2 cs) {
@@ -186,22 +216,18 @@ export const fragment = (lite: boolean) => /* glsl */ `
   }
 
   // side −1 = metade esquerda (x < 0), +1 = direita
-  // ids: 1 casca · 2 corte · 3 ouro · 4 creme exposto no ápice
+  // ids: 1 cobertura · 2 corte · 3 ouro · 4 framboesa · 5 pistache
   vec2 piece(vec3 q, float side) {
-    float body = max(pyr(q), q.y - (H - 0.05));
-    // faces moldadas à mão: ondulação quase invisível que quebra o "plano de CG"
-    if (body < 0.02) body += (noise(q * 3.5) - 0.5) * 0.004 + (noise(q * 55.0) - 0.5) * 0.0011;
+    float body = cake(q);
+    // alisada à mão: ondulação larga quase invisível (o veludo em si é cor, não relevo)
+    if (body < 0.02) body += (noise(q * 4.0) - 0.5) * 0.0018;
     float disp = (uOpen > 0.001 && abs(q.x) < 0.05 && body < 0.05) ? cutDisp(q) : 0.0;
     float cutT = uOpen > 0.0005 ? -side * q.x - disp : -1e3;
     float solid = max(body, cutT);
     vec2 r = vec2(solid, cutT > body ? 2.0 : 1.0);
-    vec3 tip = q - vec3(0.0, H, 0.0);
-    if (dot(tip, tip) < 0.08) {
-      // ponta de creme que aparece sob o ouro
-      float cr = max((length((tip + vec3(0.0, 0.045, 0.0)) / vec3(1.0, 0.7, 1.0)) - 0.062) * 0.7, uOpen > 0.0005 ? -side * q.x : -1e3);
-      if (cr < r.x) r = vec2(cr, 4.0);
-      float gd = gold(q, side);
-      if (gd < r.x) r = vec2(gd, 3.0);
+    if (side < 0.0) {
+      vec2 dd = decor(q);
+      if (dd.x < r.x) r = dd;
     }
     return r;
   }
@@ -226,12 +252,13 @@ export const fragment = (lite: boolean) => /* glsl */ `
       bool left = i == 0;
       float side = left ? -1.0 : 1.0;
       vec3 q = toLocal(p, left ? uOffL : uOffR, left ? uRotL : uRotR);
-      float body = pyr(q);
+      float body = cake(q);
       float cutT = uOpen > 0.0005 ? -side * q.x : -1e3;
       vec2 h = vec2(max(body, cutT), cutT > body ? 2.0 : 1.0);
-      vec3 c = q - vec3(side * 0.03 * uOpen, H - 0.005, 0.0);
-      float gd = (length(c / vec3(0.11, 0.05, 0.1)) - 1.0) * 0.05;
-      if (gd < h.x) h = vec2(gd, 3.0);
+      if (left) {
+        float dd = (length((q - DECO - vec3(0.01, 0.045, -0.01)) / vec3(0.19, 0.075, 0.18)) - 1.0) * 0.075;
+        if (dd < h.x) h = vec2(dd, 4.0);
+      }
       h.y += left ? 0.0 : 10.0;
       if (h.x < r.x) r = h;
     }
@@ -276,11 +303,9 @@ export const fragment = (lite: boolean) => /* glsl */ `
 
   /* ---------- luz ---------- */
 
-  // calibrado: face iluminada da vitrine ≈ rgb(242,209,143) com ndl ≈ 0,5
   const vec3 KEY = vec3(1.0, 0.965, 0.92) * 1.75;
   // estúdio branco: o ambiente é claro e quente (papel e paredes rebatem)
-  // penumbra da foto é ocre quente rgb(109,80,45): o rebatimento tem pouco azul
-  const vec3 AMB = vec3(0.24, 0.18, 0.12);
+  const vec3 AMB = vec3(0.24, 0.18, 0.13);
 
   vec3 env(vec3 r) {
     // cicloramas brancas: topo e lados claros, horizonte um pouco mais escuro, chão claro
@@ -302,7 +327,7 @@ export const fragment = (lite: boolean) => /* glsl */ `
     return D * G / max(4.0 * ndl * ndv, 1e-3);
   }
 
-  // difuso com "wrap" por canal: o vermelho atravessa mais o chocolate, o terminador esquenta
+  // difuso com "wrap" por canal: o vermelho atravessa mais, o terminador esquenta
   vec3 wrapDiffuse(float ndl, vec3 w) {
     return clamp((vec3(ndl) + w) / (1.0 + w), 0.0, 1.0);
   }
@@ -329,92 +354,111 @@ export const fragment = (lite: boolean) => /* glsl */ `
     sh *= fall;
     vec3 amb = AMB * (0.55 + 0.45 * n.y) * ao + vec3(0.1, 0.085, 0.07) * clamp(0.5 - 0.5 * n.y, 0.0, 1.0) * ao;
     vec3 col;
+    // brilho especular das softboxes, usado pela fruta e pela geleia
+    float lobe = pow(max(dot(r, L), 0.0), 34.0) * 3.0 + pow(max(dot(r, normalize(vec3(-L.x, 0.5, 0.7))), 0.0), 50.0) * 0.8;
 
-    if (m > 3.5) {
-      // creme no ápice, sob o ouro
-      vec3 alb = vec3(0.92, 0.74, 0.42);
-      col = alb * (KEY * wrapDiffuse(ndl, vec3(0.5, 0.35, 0.2)) * mix(1.0, sh, 0.5) + amb * 1.6);
+    if (m > 4.5) {
+      // pistache: verde vivo por dentro, pele arroxeada aqui e ali
+      vec3 alb = mix(vec3(0.36, 0.5, 0.1), vec3(0.5, 0.32, 0.22), smoothstep(0.6, 0.75, noise(q * 90.0)));
+      col = alb * (KEY * wrapDiffuse(ndl, vec3(0.3, 0.35, 0.15)) * sh + amb * 1.3);
+      col += KEY * ggx(nh, max(ndlc, 0.02), ndv, 0.45) * ndlc * sh * 0.08;
+    } else if (m > 3.5) {
+      // framboesa: vermelho fundo, translúcida, cada drupela com seu ponto de luz
+      vec3 alb = vec3(0.5, 0.022, 0.055) * (0.85 + 0.3 * noise(q * 70.0));
+      vec3 dif = wrapDiffuse(ndl, vec3(0.65, 0.12, 0.2));
+      col = alb * (KEY * dif * mix(1.0, sh, 0.8) + amb * 1.2);
+      float back = pow(max(dot(V, -L), 0.0), 2.0);
+      col += vec3(0.55, 0.03, 0.06) * KEY * (0.08 + 0.3 * back) * 0.4 * ao;
+      col += KEY * ggx(nh, max(ndlc, 0.02), ndv, 0.24) * ndlc * sh * 0.45 + vec3(1.0, 0.92, 0.88) * lobe * (0.04 + 0.4 * fre) * ao;
     } else if (m > 2.5) {
       // ouro: metal, reflete o estúdio; dobras internas escurecem pela AO
       vec3 F0 = vec3(1.0, 0.72, 0.2);
       vec3 F = F0 + (1.0 - F0) * fre;
-      float rough = 0.2;
       float up = smoothstep(-0.2, 0.9, r.y);
       vec3 envG = mix(vec3(0.2, 0.14, 0.07), vec3(1.25, 1.15, 0.95), up)
         + vec3(4.0, 3.7, 3.2) * pow(max(dot(r, L), 0.0), 10.0)
         + vec3(1.6) * pow(max(dot(r, normalize(vec3(-L.x, 0.6, 0.6))), 0.0), 14.0);
       col = F * envG * (0.2 + 0.8 * ao);
-      col += F * KEY * ggx(nh, max(ndlc, 0.02), ndv, rough) * ndlc * sh * 1.6;
+      col += F * KEY * ggx(nh, max(ndlc, 0.02), ndv, 0.2) * ndlc * sh * 1.6;
       col *= 0.85 + 0.3 * noise(q * 160.0);
     } else if (m > 1.5) {
       // o corte
-      float di = -pyr(q);
-      float g = guava(q);
-      float mar = marble(q);
-      float isShell = 1.0 - smoothstep(SHELL - 0.004, SHELL + 0.004, di);
-      float isGuava = (1.0 - smoothstep(-0.003, 0.003, g)) * (1.0 - isShell) * (1.0 - mar * 0.9);
+      float di = -cake(q);
+      float sponge, jam, crunch;
+      layers(q, di, sponge, jam, crunch);
+      float isShell = 1.0 - smoothstep(SHELL - 0.003, SHELL + 0.003, di);
+      sponge *= 1.0 - isShell;
+      jam *= 1.0 - isShell;
+      crunch *= 1.0 - isShell;
+      float cream = clamp(1.0 - sponge - jam - crunch - isShell, 0.0, 1.0);
 
-      // creme: dourado, granulado; poros escuros, migalhas claras
-      // creme de brie: manteiga pálida, mais amarela onde afunda, quase branca nas pontas
-      // marfim pálido que amarela perto da fruta e no fundo das ondas
-      float lump = fbm(q * 6.0);
-      vec3 cream = mix(vec3(0.84, 0.55, 0.2), vec3(0.92, 0.7, 0.34), smoothstep(0.32, 0.68, lump));
-      cream = mix(cream, vec3(0.86, 0.52, 0.16), (1.0 - smoothstep(0.0, 0.12, g)) * 0.4);
-      cream *= 0.95 + 0.08 * noise(q * 40.0);
-      // perto do ápice o corte é quase só chocolate: mais amarelo e liso
-      cream = mix(cream, vec3(0.92, 0.64, 0.27), smoothstep(H * 0.72, H * 0.9, q.y) * 0.6);
-      // a fruta tinge o creme só num fio
-      cream = mix(cream, vec3(0.78, 0.32, 0.09), (1.0 - smoothstep(0.0, 0.028, g)) * 0.5 * (1.0 - isShell));
-      vec3 shellCut = vec3(0.95, 0.75, 0.4);
+      // mousse de chocolate branco: marfim, aerada; bolhinhas de ar raras e miúdas
+      vec3 mousse = vec3(0.86, 0.78, 0.62) * (0.95 + 0.08 * fbm(q * 14.0));
+      if (cream > 0.001) mousse *= 1.0 - 0.22 * (1.0 - smoothstep(0.015, 0.05, cells(q.zy * 70.0 + 9.0))) * smoothstep(0.55, 0.7, noise(q * 12.0));
+      // a geleia tinge a mousse só num fio, logo acima de cada camada
+      float tint = (1.0 - smoothstep(0.0, 0.016, q.y - 0.37)) * step(0.37, q.y) + (1.0 - smoothstep(0.0, 0.016, q.y - 0.86)) * step(0.86, q.y);
+      mousse = mix(mousse, vec3(0.9, 0.6, 0.6), tint * 0.3 * smoothstep(SHELL + 0.04, SHELL + 0.05, di));
 
-      // goiabada: vermelho profundo sem cinza; mais clara e alaranjada onde é fina
-      float thick = clamp(-g / 0.1, 0.0, 1.0);
-      float fib = noise(vec3(q.y * 7.0 + q.z * 2.0, q.z * 34.0 - q.y * 9.0, q.x * 6.0));
-      vec3 gv = mix(vec3(0.36, 0.035, 0.008), vec3(0.11, 0.0015, 0.001), smoothstep(0.0, 0.45, thick));
-      gv *= 0.8 + 0.4 * fib;
+      // pão de ló de pistache: verde-oliva claro, miolo que escurece nos alvéolos,
+      // e as faces de cima e de baixo um pouco mais tostadas
+      vec3 spongeC = mix(vec3(0.5, 0.56, 0.22), vec3(0.64, 0.67, 0.31), fbm(q * 9.0));
+      if (sponge > 0.001) {
+        spongeC *= 1.0 - 0.3 * crumb(q);
+        spongeC *= 0.92 + 0.12 * noise(q * 120.0);
+        float yy = q.y < 0.45 ? q.y : q.y - 0.515;
+        float edgeB = max(1.0 - smoothstep(0.0, 0.012, yy - 0.085), 1.0 - smoothstep(0.0, 0.012, 0.3 - yy));
+        spongeC = mix(spongeC, vec3(0.5, 0.4, 0.16), edgeB * 0.45);
+      }
 
-      vec3 alb = mix(mix(cream, gv, isGuava), shellCut, isShell);
-      vec3 dif = wrapDiffuse(ndl, vec3(0.25, 0.16, 0.08));
+      // geleia de framboesa: rubi, mais clara e translúcida junto das bordas, sementinhas escuras
+      float seed = jam > 0.001 ? (1.0 - smoothstep(0.05, 0.09, cells(q.zy * 64.0 + 3.1))) * step(0.45, noise(q * 30.0)) : 0.0;
+      vec3 jamC = mix(vec3(0.46, 0.025, 0.06), vec3(0.36, 0.015, 0.04), noise(q * 10.0));
+      jamC = mix(jamC, vec3(0.13, 0.025, 0.02), seed * 0.7);
+
+      // crocante: praliné dourado com lascas de pistache
+      vec3 crunchC = mix(vec3(0.7, 0.5, 0.24), vec3(0.45, 0.52, 0.16), smoothstep(0.62, 0.72, noise(q * 70.0)));
+      crunchC *= 0.75 + 0.4 * fbm(q * 45.0);
+
+      vec3 coatCut = vec3(0.84, 0.5, 0.5);
+      vec3 alb = cream * mousse + sponge * spongeC + jam * jamC + crunch * crunchC + isShell * coatCut;
+      vec3 dif = wrapDiffuse(ndl, vec3(0.25, 0.16, 0.1));
       col = alb * (KEY * dif * sh * 0.92 + amb * 1.15);
-      // creme é fosco com um brilho úmido aqui e ali
-      // creme úmido: brilho acetinado largo em quase tudo, mais vivo onde está mais liso
-      float wet = smoothstep(0.4, 0.7, noise(q * 9.0 + 4.0)) * (1.0 - isGuava) * (1.0 - isShell);
-      col += (1.0 - isGuava) * (1.0 - isShell) * (KEY * ggx(nh, max(ndlc, 0.02), ndv, mix(0.42, 0.26, wet)) * ndlc * sh * 0.11 * (1.0 + wet) + env(r) * (0.02 + 0.25 * fre) * 0.3);
-      // goiabada é gelatina: verniz nítido + reflexo do estúdio + brilho interno vermelho
-      // só os lóbulos das softboxes refletem: o resto do estúdio não vela o vermelho
-      float lobe = pow(max(dot(r, L), 0.0), 34.0) * 3.0 + pow(max(dot(r, normalize(vec3(-L.x, 0.5, 0.7))), 0.0), 50.0) * 0.8;
-      col += isGuava * (KEY * ggx(nh, max(ndlc, 0.02), ndv, 0.12) * ndlc * sh * 0.55 + vec3(1.0, 0.92, 0.85) * lobe * (0.06 + 0.6 * fre) * 2.2);
-      col += isGuava * vec3(0.5, 0.06, 0.02) * (1.0 - thick) * (0.3 * ndlc * sh + 0.04);
+      // mousse acetinada: lóbulo largo, sem espelho
+      col += cream * (KEY * ggx(nh, max(ndlc, 0.02), ndv, 0.36) * ndlc * sh * 0.12 + env(r) * (0.02 + 0.25 * fre) * 0.3);
+      // geleia é gelatina: verniz nítido + reflexo das softboxes + brilho interno vermelho
+      col += jam * (1.0 - seed) * (KEY * ggx(nh, max(ndlc, 0.02), ndv, 0.12) * ndlc * sh * 0.55 + vec3(1.0, 0.92, 0.85) * lobe * (0.06 + 0.6 * fre) * 2.2);
+      col += jam * vec3(0.5, 0.03, 0.05) * (0.3 * ndlc * sh + 0.04);
     } else {
-      // casca de chocolate branco: manteiga, acetinada, subsurface quente
-      vec3 alb = vec3(0.93, 0.72, 0.37) * (0.95 + 0.07 * noise(q * 9.0)) * (0.965 + 0.06 * noise(q * 64.0));
-      alb = mix(alb, alb * vec3(1.06, 1.04, 0.98), smoothstep(0.7, 0.85, noise(q * 160.0)) * 0.5);
-      vec3 dif = wrapDiffuse(ndl, vec3(0.42, 0.26, 0.1));
-      col = alb * (KEY * dif * mix(vec3(1.0), vec3(sh), vec3(0.85, 0.92, 1.0)) + amb);
-      // translucidez: onde a casca é fina, a luz de trás atravessa amarelada
-      float th = clamp(-mapLite(p - n * 0.06).x / 0.06, 0.0, 1.0);
-      float back = pow(max(dot(V, -L), 0.0), 2.5);
-      col += alb * vec3(1.0, 0.62, 0.22) * KEY * (1.0 - th) * (0.12 + 0.55 * back) * 0.35;
-      // acetinado: lóbulo largo de especular + um fio de brilho na borda
-      col += KEY * ggx(nh, max(ndlc, 0.02), ndv, 0.42) * ndlc * sh * (0.04 + 0.5 * fre) * 0.9;
-      col += env(r) * (0.035 + 0.3 * fre) * ao * 0.35;
+      // cobertura veludo rosé: pontilhado do spray, sem reflexo, brilho rasante na borda
+      vec3 alb = vec3(0.74, 0.39, 0.41) * (0.96 + 0.06 * noise(q * 9.0));
+      alb *= 0.93 + 0.1 * noise(q * 420.0);
+      vec3 dif = wrapDiffuse(ndl, vec3(0.3, 0.2, 0.18));
+      // na penumbra o rosa fica rosa: rebatimento mais forte e um pouco mais frio que o do papel
+      col = alb * (KEY * dif * mix(vec3(1.0), vec3(sh), vec3(0.85, 0.92, 1.0)) + amb * 1.25 + vec3(0.1, 0.1, 0.12) * ao);
+      float sheen = pow(1.0 - ndv, 2.2);
+      col += vec3(1.0, 0.82, 0.8) * sheen * (KEY * clamp((ndl + 0.3) / 1.3, 0.0, 1.0) * sh * 0.3 + amb * 0.9) * ao;
+      col += alb * vec3(1.0, 0.5, 0.4) * KEY * pow(max(dot(V, -L), 0.0), 2.5) * 0.06;
+      col += KEY * ggx(nh, max(ndlc, 0.02), ndv, 0.6) * ndlc * sh * 0.05;
 
-      // a lâmina: fio de ouro que desce pela face antes do corte
+      // a lâmina: fio de ouro que atravessa o topo de trás para a frente e desce pela face
       if (uSeam > 0.0 && uOpen < 0.25) {
-        float yS = H * (1.0 - uSeam);
+        float len = 2.0 * R + H;
+        float s = uSeam * len;
+        float onTop = step(H - 0.035, q.y);
+        float pos = onTop > 0.5 ? q.z + R : (q.z > 0.0 ? 2.0 * R + H - q.y : 1e3);
         float w = 1.0 - smoothstep(0.0018, 0.007, abs(q.x));
-        float on = smoothstep(yS - 0.01, yS + 0.02, q.y) * step(0.0, q.z);
+        float on = 1.0 - smoothstep(s - 0.02, s + 0.01, pos);
         float k = 1.0 - uOpen * 4.0;
         col += vec3(1.0, 0.72, 0.3) * w * on * 2.4 * k;
-        float tipZ = B * (1.0 - yS / H);
-        float dS = length(q - vec3(0.0, yS, tipZ));
+        vec3 tip = s < 2.0 * R ? vec3(0.0, H, -R + s) : vec3(0.0, H - (s - 2.0 * R), R);
+        float dS = length(q - tip);
         col += vec3(1.0, 0.84, 0.52) * exp(-dS * 40.0) * 3.0 * k * (1.0 - step(0.995, uSeam));
       }
     }
     return col;
   }
 
-  // ombro suave: linear até 0,8 (casa com as medidas das fotos), comprime só o brilho
+  // ombro suave: linear até 0,8, comprime só o brilho
   vec3 tone(vec3 c) {
     vec3 k = 0.8 + 0.2 * (1.0 - exp(-(c - 0.8) / 0.2));
     c = mix(c, k, step(0.8, c));
@@ -431,7 +475,7 @@ export const fragment = (lite: boolean) => /* glsl */ `
     vec3 rd = normalize(uv.x * rt + uv.y * up + uFocal * fw);
     vec3 ro = uRo;
 
-    // esfera envolvente das duas metades (cantos da base a ≈1,2 do centro)
+    // esfera envolvente das duas metades
     vec3 bc = 0.5 * (uOffL + uOffR) + vec3(0.0, H * 0.5, 0.0);
     float br = 1.36 + 0.5 * length(uOffR - uOffL);
     vec3 oc = ro - bc;
@@ -466,7 +510,7 @@ export const fragment = (lite: boolean) => /* glsl */ `
     } else if (dmin < pix * 1.2 && tmin > 0.0 && (ro.y + rd.y * tmin) > 0.02) {
       cov = 1.0 - smoothstep(0.0, pix * 1.2, dmin);
       tS = tmin;
-      id = mapLite(ro + rd * tmin).y;
+      id = map(ro + rd * tmin).y;
     }
 
     float tf = rd.y < 0.0 ? -ro.y / rd.y : -1.0;
@@ -488,7 +532,7 @@ export const fragment = (lite: boolean) => /* glsl */ `
       float dd = mapLite(pf + vec3(0.0, 0.01, 0.0)).x;
       float contact = 1.0 - smoothstep(0.0, 0.14, dd);
       float fs = objShadow ? 1.0 : sh;
-      // sombra densa como na foto (núcleo ≈ 18% do papel), mais clara longe do bombom
+      // sombra densa junto do bolo, mais clara longe dele
       float a = (1.0 - fs) * mix(0.6, 0.3, smoothstep(0.6, 2.6, far)) + contact * contact * contact * 0.32;
       a *= 1.0 - smoothstep(3.0, 5.0, far);
       outc = vec4(vec3(0.33, 0.29, 0.27) * a, a);
