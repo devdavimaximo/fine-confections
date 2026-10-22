@@ -18,7 +18,7 @@ await mkdir(out('media/menu'), { recursive: true });
 /* ---------- fotos ---------- */
 
 const PHOTOS = [
-  'macarons',
+  'docinhos',
   'macarons3',
   'mesatarte',
   'mesatarte2',

@@ -40,7 +40,7 @@ export default function Manifesto() {
 
       <div className="casa__grid">
         <figure className="casa__oval" id="foto-real" data-veil>
-          <Img src="macarons" alt="Dois macarons de chocolate empilhados, o de cima mordido, mostrando o recheio de caramelo" sizes="(max-width: 899px) 70vw, 30vw" />
+          <Img src="docinhos" alt="Bombom de caramelo com flor de sal cortado ao meio, com o caramelo escorrendo" sizes="(max-width: 899px) 70vw, 30vw" />
           <figcaption className="casa__badge">{hero.realBadge}</figcaption>
         </figure>
         <figure className="casa__arch" data-veil="0.2">
