@@ -81,30 +81,33 @@ export default function Header() {
   };
 
   return (
-    <header className={`hud ${open ? 'is-open' : ''}`} ref={root}>
-      <button className="hud__brand" onClick={() => go('topo')} aria-label={`${brand.name}, voltar ao início`} data-cursor="início">
-        <Monogram className="hud__mono" />
-        <span className="hud__word">{brand.name}</span>
-      </button>
+    <>
+      <header className={`hud ${open ? 'is-open' : ''}`} ref={root}>
+        <button className="hud__brand" onClick={() => go('topo')} aria-label={`${brand.name}, voltar ao início`} data-cursor="início">
+          <Monogram className="hud__mono" />
+          <span className="hud__word">{brand.name}</span>
+        </button>
 
-      <nav className="hud__nav" aria-label="Seções">
-        {nav.map((n) => (
-          <button key={n.id} className={`hud__link ${active === n.id ? 'is-active' : ''}`} onClick={() => go(n.id)}>
-            {n.label}
-          </button>
-        ))}
-      </nav>
+        <nav className="hud__nav" aria-label="Seções">
+          {nav.map((n) => (
+            <button key={n.id} className={`hud__link ${active === n.id ? 'is-active' : ''}`} onClick={() => go(n.id)}>
+              {n.label}
+            </button>
+          ))}
+        </nav>
 
-      <button className="hud__cta" onClick={() => sendOrder(contato.message)} data-cursor="conversar">
-        Agendar degustação
-      </button>
+        <button className="hud__cta" onClick={() => sendOrder(contato.message)} data-cursor="conversar">
+          Agendar degustação
+        </button>
 
-      <button className="hud__burger" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-controls="menu-movel" aria-label={open ? 'Fechar menu' : 'Abrir menu'}>
-        <i />
-        <i />
-      </button>
+        <button className="hud__burger" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-controls="menu-movel" aria-label={open ? 'Fechar menu' : 'Abrir menu'}>
+          <i />
+          <i />
+        </button>
+      </header>
 
-      <div className="drawer" id="menu-movel" aria-hidden={!open}>
+      {/* fora do <header>: o transform dele prenderia o position: fixed à altura da barra */}
+      <div className={`drawer ${open ? 'is-open' : ''}`} id="menu-movel" aria-hidden={!open}>
         <ol className="drawer__list">
           {nav.map((n, i) => (
             <li key={n.id} style={{ transitionDelay: open ? `${0.08 + i * 0.05}s` : '0s' }}>
@@ -122,6 +125,6 @@ export default function Header() {
           <span>{brand.region}</span>
         </div>
       </div>
-    </header>
+    </>
   );
 }

@@ -527,7 +527,7 @@ main {
 .drawer {
   position: fixed;
   inset: 0;
-  z-index: 1;
+  z-index: 59;
   background: var(--ganache);
   color: var(--bone);
   padding: calc(var(--hud-h) + 4vh) var(--pad) 32px;
@@ -539,7 +539,7 @@ main {
   pointer-events: none;
 }
 
-.hud.is-open .drawer {
+.drawer.is-open {
   clip-path: inset(0 0 0 0);
   pointer-events: auto;
 }
@@ -552,7 +552,7 @@ main {
     transform 0.9s var(--ease);
 }
 
-.hud.is-open .drawer__list li {
+.drawer.is-open .drawer__list li {
   opacity: 1;
   transform: none;
 }
